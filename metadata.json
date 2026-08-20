@@ -1,0 +1,8 @@
+{
+  "name": "BitsB2B1",
+  "description": "Enterprise B2B sourcing and wholesale marketplace featuring categorized catalogs, structured RFQ inquiries, escrow payments via Telebirr and CBE Birr, verified supplier badges, and full order tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
