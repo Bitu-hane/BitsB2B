@@ -17,6 +17,8 @@ import { SellerDashboard } from './components/SellerDashboard';
 import { InquiriesInboxView } from './components/InquiriesInboxView';
 import { HeroSearch } from './components/HeroSearch';
 import { CategoriesForYou } from './components/CategoriesForYou';
+import { LoginPage } from './components/LoginPage';
+import { SignUpPage } from './components/SignUpPage';
 import {
   ShieldCheck,
   Truck,
@@ -404,10 +406,24 @@ const MarketplaceContent: React.FC = () => {
   );
 };
 
+const MainApp: React.FC = () => {
+  const { currentUser, authView } = useMarketplace();
+
+  if (!currentUser && authView === 'signup') {
+    return <SignUpPage />;
+  }
+
+  if (!currentUser || authView === 'login') {
+    return <LoginPage />;
+  }
+
+  return <MarketplaceContent />;
+};
+
 export function App() {
   return (
     <MarketplaceProvider>
-      <MarketplaceContent />
+      <MainApp />
     </MarketplaceProvider>
   );
 }

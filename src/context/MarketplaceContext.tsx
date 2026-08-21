@@ -23,12 +23,29 @@ import {
   INITIAL_NOTIFICATIONS,
   MOCK_BUSINESSES,
 } from '../data/mockData';
+import enTranslations from '../i18n/en.json';
+import amTranslations from '../i18n/am.json';
+import { api } from '../services/api';
+
+const translationsMap: Record<string, any> = {
+  en: enTranslations,
+  am: amTranslations,
+};
 
 interface MarketplaceContextType {
+  // i18n & Language Preference
+  language: 'en' | 'am';
+  setLanguage: (lang: 'en' | 'am') => void;
+  authView: 'login' | 'signup' | 'marketplace';
+  setAuthView: (view: 'login' | 'signup' | 'marketplace') => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
+
   // Auth & Session
   currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
   loginWithPhoneOtp: (phone: string, businessName: string, role: UserRole, isSeller?: boolean) => User;
+  loginWithApi: (phone: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  registerWithApi: (formData: any) => Promise<{ success: boolean; error?: string }>;
   switchUser: (userId: string | 'visitor') => void;
   logout: () => void;
   allUsers: User[];
@@ -134,6 +151,39 @@ const STORAGE_KEYS = {
 };
 
 export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // i18n Language & Auth Navigation state
+  const [language, setLanguageState] = useState<'en' | 'am'>(() => {
+    const saved = localStorage.getItem('bitsb2b_language_v2');
+    return saved === 'am' || saved === 'en' ? saved : 'en';
+  });
+
+  const setLanguage = (lang: 'en' | 'am') => {
+    setLanguageState(lang);
+    localStorage.setItem('bitsb2b_language_v2', lang);
+  };
+
+  const [authView, setAuthView] = useState<'login' | 'signup' | 'marketplace'>('login');
+
+  const t = (key: string, params?: Record<string, string | number>): string => {
+    const currentDict = translationsMap[language] || translationsMap['en'];
+    const parts = key.split('.');
+    let val: any = currentDict;
+    for (const p of parts) {
+      if (val && typeof val === 'object' && p in val) {
+        val = val[p];
+      } else {
+        val = key;
+        break;
+      }
+    }
+    if (typeof val === 'string' && params) {
+      Object.keys(params).forEach(p => {
+        val = (val as string).replace(new RegExp(`{{${p}}}`, 'g'), String(params[p]));
+      });
+    }
+    return typeof val === 'string' ? val : key;
+  };
+
   // Load initial states from localStorage if available
   const [currentUser, setCurrentUserState] = useState<User | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.USER);
@@ -141,10 +191,10 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
       try {
         return JSON.parse(saved);
       } catch (e) {
-        return MOCK_USERS[0]; // Default registered buyer
+        return MOCK_USERS[0];
       }
     }
-    return MOCK_USERS[0]; // Abebe Tadesse by default for seamless interactive experience
+    return null; // Start with Login page when no saved user
   });
 
   const [allUsers, setAllUsers] = useState<User[]>(() => {
@@ -318,7 +368,157 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   const logout = () => {
+    api.logout().catch(() => {});
     setCurrentUserState(null);
+    setAuthView('login');
+  };
+
+  const loginWithApi = async (phone: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    const cleanPhone = phone.trim();
+    const { data, error } = await api.loginWithPassword(cleanPhone, password);
+
+    if (error) {
+      // Local fallback for offline/demo environment when backend server is unreachable
+      if (error.statusCode === 0) {
+        const localMatch = allUsers.find(u => u.phone.replace(/\s+/g, '') === cleanPhone.replace(/\s+/g, ''));
+        if (localMatch) {
+          setCurrentUserState(localMatch);
+          setAuthView('marketplace');
+          return { success: true };
+        }
+      }
+      if (error.statusCode === 401 || error.statusCode === 404 || error.message.toLowerCase().includes('invalid')) {
+        return {
+          success: false,
+          error: t('auth.userDoesNotExistError'),
+        };
+      }
+      return {
+        success: false,
+        error: error.message || t('auth.invalidCredentialsError'),
+      };
+    }
+
+    if (data?.user) {
+      const mappedUser: User = {
+        id: data.user.id || `user_${Date.now()}`,
+        name: data.user.fullName || data.user.full_name || 'B2B Merchant',
+        phone: data.user.phone || cleanPhone,
+        isSeller: false,
+        business: {
+          id: data.business?.id || `biz_${Date.now()}`,
+          name: data.business?.name || (data.user.fullName || 'B2B User') + ' Enterprise',
+          role: 'reseller',
+          phone: data.user.phone || cleanPhone,
+          region: 'Addis Ababa',
+          city: 'Addis Ababa',
+          subcity: 'Bole Subcity',
+          verificationStatus: 'verified',
+          establishedYear: 2024,
+          averageResponseTime: '< 1 hour',
+          responseRate: '100%',
+          rating: 4.9,
+          totalOrdersCompleted: 12,
+          description: 'Registered Ethiopian B2B enterprise merchant.',
+        },
+      };
+
+      setCurrentUserState(mappedUser);
+      setAuthView('marketplace');
+      return { success: true };
+    }
+
+    return {
+      success: false,
+      error: t('auth.userDoesNotExistError'),
+    };
+  };
+
+  const registerWithApi = async (formData: any): Promise<{ success: boolean; error?: string }> => {
+    const { data, error } = await api.registerUser(formData);
+
+    if (error) {
+      if (error.statusCode === 0) {
+        // Fallback for offline demo mode when backend server is unreachable
+        const newUser: User = {
+          id: `user_${Date.now()}`,
+          name: formData.fullName,
+          phone: formData.phone,
+          isSeller: formData.canSell ?? false,
+          business: {
+            id: `biz_${Date.now()}`,
+            name: formData.businessName,
+            role: (formData.businessTypeCode as UserRole) || 'wholesaler',
+            phone: formData.phone,
+            region: formData.region || 'Addis Ababa',
+            city: formData.city || 'Addis Ababa',
+            subcity: formData.subcity || 'Bole Subcity',
+            tinNumber: formData.tinNumber,
+            tradeLicenseNumber: formData.tradeLicenseNumber,
+            verificationStatus: 'pending',
+            establishedYear: new Date().getFullYear(),
+            averageResponseTime: '< 2 hours',
+            responseRate: '100%',
+            rating: 5.0,
+            totalOrdersCompleted: 0,
+            description: `Registered Ethiopian B2B ${formData.businessTypeCode || 'Wholesale'} Enterprise.`,
+          },
+        };
+        setAllUsers(prev => [newUser, ...prev]);
+        setCurrentUserState(newUser);
+        setAuthView('marketplace');
+        return { success: true };
+      }
+
+      if (error.message && (error.message.includes('already registered') || error.message.includes('unique'))) {
+        return {
+          success: false,
+          error: t('auth.phoneAlreadyExistsError'),
+        };
+      }
+
+      return {
+        success: false,
+        error: error.message || 'Registration failed. Please check form inputs.',
+      };
+    }
+
+    if (data?.user) {
+      const newUser: User = {
+        id: data.user.id || `user_${Date.now()}`,
+        name: formData.fullName,
+        phone: formData.phone,
+        isSeller: formData.canSell ?? false,
+        business: {
+          id: data.business?.id || `biz_${Date.now()}`,
+          name: formData.businessName,
+          role: (formData.businessTypeCode as UserRole) || 'wholesaler',
+          phone: formData.phone,
+          region: formData.region || 'Addis Ababa',
+          city: formData.city || 'Addis Ababa',
+          subcity: formData.subcity || 'Bole Subcity',
+          tinNumber: formData.tinNumber,
+          tradeLicenseNumber: formData.tradeLicenseNumber,
+          verificationStatus: 'pending',
+          establishedYear: new Date().getFullYear(),
+          averageResponseTime: '< 2 hours',
+          responseRate: '100%',
+          rating: 5.0,
+          totalOrdersCompleted: 0,
+          description: `Registered Ethiopian B2B ${formData.businessTypeCode || 'Wholesale'} Enterprise.`,
+        },
+      };
+
+      setAllUsers(prev => [newUser, ...prev]);
+      setCurrentUserState(newUser);
+      setAuthView('marketplace');
+      return { success: true };
+    }
+
+    return {
+      success: false,
+      error: 'Registration failed.',
+    };
   };
 
   const loginWithPhoneOtp = (phone: string, businessName: string, role: UserRole, isSeller = false): User => {
@@ -772,9 +972,16 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
   return (
     <MarketplaceContext.Provider
       value={{
+        language,
+        setLanguage,
+        authView,
+        setAuthView,
+        t,
         currentUser,
         setCurrentUser,
         loginWithPhoneOtp,
+        loginWithApi,
+        registerWithApi,
         switchUser,
         logout,
         allUsers,

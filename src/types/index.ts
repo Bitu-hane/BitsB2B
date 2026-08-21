@@ -20,6 +20,7 @@ export interface Business {
   subcity?: string;
   verificationStatus: VerificationStatus;
   licenseNumber?: string;
+  tradeLicenseNumber?: string;
   tinNumber?: string;
   verifiedDate?: string;
   establishedYear: number;
