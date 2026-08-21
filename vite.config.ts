@@ -15,7 +15,7 @@ export default defineConfig(() => {
       rollupOptions: {
         input: {
           main: path.resolve(__dirname, 'index.html'),
-          manifest: path.resolve(__dirname, 'manifest-ui/index.html'),
+        //  manifest: path.resolve(__dirname, 'manifest-ui/index.html'),
         },
       },
     },
