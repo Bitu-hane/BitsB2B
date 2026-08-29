@@ -9,6 +9,14 @@ coverage/
 .~*
 ~$*
 
+# Next.js
+.next/
+*.tsbuildinfo
+
 # Exclude manifest UI
 src/manifest-ui/
 manifest-ui/
+
+# Nx cache
+.nx/
+
