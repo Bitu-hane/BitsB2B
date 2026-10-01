@@ -68,9 +68,9 @@ services:
     runtime: node
     region: singapore
     plan: starter
-    rootDir: apps/backend
-    buildCommand: cd ../.. && npm install && npm run build --workspace=apps/backend
-    startCommand: cd ../.. && npm run start:prod --workspace=apps/backend
+    rootDir: .
+    buildCommand: npm install && npm run build --workspace=apps/backend
+    startCommand: npm run start:prod --workspace=apps/backend
     envVars:
       - key: PORT
         value: 10000
@@ -112,9 +112,10 @@ services:
     runtime: node
     region: singapore
     plan: starter
-    rootDir: apps/web
-    buildCommand: cd ../.. && npm install && npm run build --workspace=apps/web
-    startCommand: cd ../.. && npm run start --workspace=apps/web
+    rootDir: .
+    buildCommand: npm install && npm run build --workspace=apps/web
+    startCommand: npm run start --workspace=apps/web
+
     envVars:
       - key: NODE_ENV
         value: production
