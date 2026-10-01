@@ -2,18 +2,11 @@
 import React, { useState } from 'react';
 import { useMarketplace } from '../context/MarketplaceContext';
 import {
-  ShieldCheck,
   Bell,
   MessageSquare,
   Package,
   Store,
-  User as UserIcon,
-  ChevronDown,
-  RefreshCw,
   LogOut,
-  Building2,
-  Phone,
-  CheckCircle2,
   Globe,
   ShoppingCart,
 } from 'lucide-react';
@@ -21,8 +14,6 @@ import {
 export const Header: React.FC = () => {
   const {
     currentUser,
-    allUsers,
-    switchUser,
     logout,
     setAuthModalOpen,
     setViewingView,
@@ -30,7 +21,6 @@ export const Header: React.FC = () => {
     setNotificationDrawerOpen,
     inquiries,
     orders,
-    resetToDefaults,
     searchQuery,
     setSearchQuery,
     language,
@@ -38,7 +28,6 @@ export const Header: React.FC = () => {
     t,
   } = useMarketplace();
 
-  const [roleSwitcherOpen, setRoleSwitcherOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
 
   const unreadNotifCount = notifications.filter(n => !n.read).length;
@@ -62,133 +51,9 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full bg-[#1B2340] text-[#F4EFE3] pb-4 sticky top-0 z-40 shadow-lg">
-      {/* 1. Utility Strip */}
-      <div className="w-full bg-[#1B2340] text-[#A7AECB] text-[12.5px] py-2 border-b border-[#F4EFE3]/10">
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-8 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 font-medium text-[#F4EFE3]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#C08829]" />
-              Trade Assurance Escrow &bull; <b className="text-[#C08829]">Telebirr &amp; CBE Birr Protected</b>
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Header Language Switcher */}
-            <div className="flex items-center gap-1 bg-[#131A30] p-0.5 rounded-lg border border-[#2B3558]">
-              <button
-                type="button"
-                onClick={() => setLanguage('en')}
-                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                  language === 'en'
-                    ? 'bg-[#C08829] text-[#1B2340] shadow-xs'
-                    : 'text-[#A7AECB] hover:text-white'
-                }`}
-              >
-                <span>🇬🇧</span>
-                <span>EN</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setLanguage('am')}
-                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                  language === 'am'
-                    ? 'bg-[#C08829] text-[#1B2340] shadow-xs'
-                    : 'text-[#A7AECB] hover:text-white'
-                }`}
-              >
-                <span>🇪🇹</span>
-                <span>አማ</span>
-              </button>
-            </div>
-
-            <span className="font-mono text-xs text-[#F4EFE3]">ETB &mdash; Ethiopian Birr</span>
-            <span className="text-[#F4EFE3]/30">|</span>
-
-            {/* Quick Role Switcher */}
-            <div className="relative">
-              <button
-                id="btn-role-switcher-toggle"
-                onClick={() => setRoleSwitcherOpen(!roleSwitcherOpen)}
-                className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer text-xs"
-              >
-                <span className="font-semibold text-[#F4EFE3]">
-                  {currentUser ? `${currentUser.name}, ${currentUser.business.role}` : 'Selamawit Berhanu, Reseller'}
-                </span>
-                <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-
-              {roleSwitcherOpen && (
-                <div
-                  id="role-switcher-dropdown"
-                  className="absolute right-0 mt-1.5 w-72 bg-[#242E52] border border-[#2E3A63] rounded-xl shadow-2xl py-2 z-50 text-xs text-[#F4EFE3]"
-                  onMouseLeave={() => setRoleSwitcherOpen(false)}
-                >
-                  <div className="px-3.5 py-1.5 border-b border-[#2E3A63] text-[11px] font-mono uppercase tracking-wider text-[#C08829] font-bold">
-                    Quick Switch Account (Demo)
-                  </div>
-
-                  <button
-                    id="switch-to-visitor"
-                    onClick={() => {
-                      switchUser('visitor');
-                      setRoleSwitcherOpen(false);
-                    }}
-                    className={`w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center justify-between cursor-pointer ${
-                      !currentUser ? 'bg-[#C08829]/20 text-[#C08829] font-semibold' : 'text-[#F4EFE3]'
-                    }`}
-                  >
-                    <div>
-                      <div className="font-semibold">Unregistered Visitor</div>
-                      <div className="text-[11px] text-[#A7AECB]">Browse mode</div>
-                    </div>
-                    {!currentUser && <CheckCircle2 className="w-4 h-4 text-[#C08829]" />}
-                  </button>
-
-                  {allUsers.map(u => (
-                    <button
-                      key={u.id}
-                      id={`switch-to-user-${u.id}`}
-                      onClick={() => {
-                        switchUser(u.id);
-                        setRoleSwitcherOpen(false);
-                      }}
-                      className={`w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center justify-between cursor-pointer ${
-                        currentUser?.id === u.id ? 'bg-[#C08829]/20 text-[#C08829] font-semibold' : 'text-[#F4EFE3]'
-                      }`}
-                    >
-                      <div>
-                        <div className="font-semibold flex items-center gap-1">
-                          {u.name}
-                          {u.business.verificationStatus === 'verified' && (
-                            <ShieldCheck className="w-3.5 h-3.5 text-[#C08829]" />
-                          )}
-                        </div>
-                        <div className="text-[11px] text-[#A7AECB]">
-                          {u.business.name} &bull; <span className="capitalize">{u.business.role}</span>
-                        </div>
-                      </div>
-                      {currentUser?.id === u.id && <CheckCircle2 className="w-4 h-4 text-[#C08829]" />}
-                    </button>
-                  ))}
-
-                  <div className="px-3.5 pt-2 mt-1 border-t border-[#2E3A63]">
-                    <button
-                      onClick={resetToDefaults}
-                      className="w-full text-center py-1 bg-[#223B28] hover:bg-[#33553A] text-white rounded font-medium text-[11px] transition-colors cursor-pointer"
-                    >
-                      Reset Demo Data
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Main Header Row */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-8 pt-5 pb-2">
+    <header className="w-full bg-[#1B2340] text-[#F4EFE3] pb-4 sticky top-0 z-40 shadow-lg border-b border-[#2B3558]">
+      {/* Main Header Row */}
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-8 pt-4 pb-2">
         <div className="flex items-center justify-between gap-6 flex-wrap lg:flex-nowrap">
           {/* Brand Logo */}
           <div
@@ -227,7 +92,20 @@ export const Header: React.FC = () => {
           </div>
 
           {/* Header Action Icons */}
-          <div className="flex items-center gap-6 shrink-0">
+          <div className="flex items-center gap-5 shrink-0">
+            {/* Language Switcher Button */}
+            <div className="flex items-center gap-1 bg-[#131A30] p-1 rounded-xl border border-[#2B3558]">
+              <button
+                type="button"
+                onClick={() => setLanguage(language === 'en' ? 'am' : 'en')}
+                className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#E2B159] hover:text-white hover:bg-[#1B2340] transition-all cursor-pointer flex items-center gap-1.5"
+                title="Toggle Language / ቋንቋ ቀይር"
+              >
+                <Globe className="w-3.5 h-3.5 text-[#C08829]" />
+                <span>{language === 'en' ? 'EN' : 'አማ'}</span>
+              </button>
+            </div>
+
             {/* Cart Icon */}
             <button
               id="nav-btn-orders"
@@ -375,7 +253,7 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* 3. Frequently Searched Pill Tags */}
+        {/* Frequently Searched Pill Tags */}
         <div className="flex items-center gap-2.5 flex-wrap mt-4 text-[13px] text-[#A7AECB]">
           <div className="flex items-center gap-1.5">
             <span className="text-[#C08829]">★</span>
