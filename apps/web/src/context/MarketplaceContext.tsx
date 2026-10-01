@@ -70,8 +70,10 @@ interface MarketplaceContextType {
   setSelectedProduct: (p: Product | null) => void;
   selectedSeller: Business | null;
   setSelectedSeller: (biz: Business | null) => void;
-  viewingView: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries';
-  setViewingView: (view: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries') => void;
+  viewingView: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans';
+  setViewingView: (view: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans') => void;
+  subscriptionUpgrade: { currentCount?: number; listingLimit?: number; message?: string } | null;
+  openSubscriptionPlans: (details?: { currentCount?: number; listingLimit?: number; message?: string }) => void;
 
   // Active Modals
   authModalOpen: boolean;
@@ -99,7 +101,7 @@ interface MarketplaceContextType {
 
   // Actions
   // Product Management (Seller UC15)
-  addProduct: (productData: Omit<Product, 'id' | 'createdAt'>) => Promise<{ success: boolean; message?: string; limitReached?: boolean }>;
+  addProduct: (productData: Omit<Product, 'id' | 'createdAt'>) => Promise<{ success: boolean; message?: string; limitReached?: boolean; currentCount?: number; listingLimit?: number }>;
   updateProduct: (id: string, productData: Partial<Product>) => void;
   toggleProductStock: (productId: string, newStatus: StockStatus) => void;
   deleteProduct: (id: string) => void;
@@ -281,7 +283,13 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [filterVerifiedOnly, setFilterVerifiedOnly] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'featured' | 'price_low' | 'price_high' | 'moq_low' | 'newest'>('featured');
 
-  const [viewingView, setViewingView] = useState<'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries'>('home');
+  const [viewingView, setViewingView] = useState<'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans'>('home');
+  const [subscriptionUpgrade, setSubscriptionUpgrade] = useState<{ currentCount?: number; listingLimit?: number; message?: string } | null>(null);
+
+  const openSubscriptionPlans = (details?: { currentCount?: number; listingLimit?: number; message?: string }) => {
+    setSubscriptionUpgrade(details || null);
+    setViewingView('subscription_plans');
+  };
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedSeller, setSelectedSeller] = useState<Business | null>(null);
 
@@ -634,7 +642,7 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   // Product Management via Backend Database API
-  const addProduct = async (productData: Omit<Product, 'id' | 'createdAt'>): Promise<{ success: boolean; message?: string; limitReached?: boolean }> => {
+  const addProduct = async (productData: Omit<Product, 'id' | 'createdAt'>): Promise<{ success: boolean; message?: string; limitReached?: boolean; currentCount?: number; listingLimit?: number }> => {
     try {
       const res = await api.createProduct({
         name: productData.name,
@@ -669,6 +677,8 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
           success: false,
           message: errorMsg,
           limitReached: Boolean(res.data?.limitReached),
+          currentCount: res.data?.currentCount,
+          listingLimit: res.data?.listingLimit,
         };
       }
 
@@ -1132,6 +1142,8 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
         setSelectedSeller,
         viewingView,
         setViewingView,
+        subscriptionUpgrade,
+        openSubscriptionPlans,
         authModalOpen,
         setAuthModalOpen,
         inquiryModalOpen,

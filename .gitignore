@@ -20,3 +20,8 @@ manifest-ui/
 # Nx cache
 .nx/
 
+# Build outputs
+out/
+apps/web/out/
+apps/web/dist/
+

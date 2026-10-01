@@ -17,6 +17,7 @@ import { NotificationDrawer } from './components/NotificationDrawer';
 import { OrderHistoryView } from './components/OrderHistoryView';
 import { SellerDashboard } from './components/SellerDashboard';
 import { InquiriesInboxView } from './components/InquiriesInboxView';
+import { SubscriptionPlans } from './components/SubscriptionPlans';
 import { HeroSearch } from './components/HeroSearch';
 import { CategoriesForYou } from './components/CategoriesForYou';
 import { LoginPage } from './components/LoginPage';
@@ -104,6 +105,8 @@ const MarketplaceContent: React.FC = () => {
         <SellerDashboard />
       ) : viewingView === 'inquiries' ? (
         <InquiriesInboxView />
+      ) : viewingView === 'subscription_plans' ? (
+        <SubscriptionPlans />
       ) : (
         /* Catalog & Home View */
         <main className="flex-1 pb-16">
@@ -407,7 +410,7 @@ const MarketplaceContent: React.FC = () => {
 };
 
 export interface AppProps {
-  defaultView?: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries';
+  defaultView?: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans';
   defaultAuthView?: 'login' | 'signup' | 'marketplace';
 }
 

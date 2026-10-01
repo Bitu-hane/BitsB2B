@@ -13,6 +13,7 @@ export const ProductEditModal: React.FC = () => {
     editingProduct,
     setEditingProduct,
     addProduct,
+    openSubscriptionPlans,
     updateProduct,
     currentUser,
     categories,
@@ -154,6 +155,12 @@ export const ProductEditModal: React.FC = () => {
       });
 
       if (!res.success) {
+        if (res.limitReached) {
+          setProductEditModalOpen(false);
+          setEditingProduct(null);
+          openSubscriptionPlans({ currentCount: res.currentCount, listingLimit: res.listingLimit, message: res.message });
+          return;
+        }
         setErrorMessage(res.message || 'Product listing limit reached. Upgrade subscription to publish more products.');
         setSubmitting(false);
         return;
