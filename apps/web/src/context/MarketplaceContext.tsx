@@ -252,16 +252,24 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
   const refreshCategoriesFromApi = async () => {
     try {
       const res = await api.getCategories();
-      if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-        const mappedCats: ProductCategory[] = res.data.map((c: any) => ({
+      const rawOrData = (res.data as any)?.raw && Array.isArray((res.data as any).raw) ? (res.data as any).raw : (Array.isArray(res.data) ? res.data : (res.data as any)?.data);
+
+      if (rawOrData && Array.isArray(rawOrData) && rawOrData.length > 0) {
+        const mapCategory = (c: any): ProductCategory => ({
           id: c.id,
           name: c.name,
           slug: c.slug || c.id,
           description: c.description || c.name,
           iconName: c.icon || 'Layers',
-          image: c.image || '',
+          image: c.image || c.coverImage || '',
           itemCount: c.productCount || 0,
-        }));
+          level: c.level || (c.parentId ? 3 : 1),
+          parentId: c.parentId || null,
+          isLeaf: c.isLeaf !== undefined ? Boolean(c.isLeaf) : true,
+          subcategories: c.subcategories && Array.isArray(c.subcategories) ? c.subcategories.map(mapCategory) : [],
+        });
+
+        const mappedCats: ProductCategory[] = rawOrData.map(mapCategory);
         setCategories(mappedCats);
         return mappedCats;
       }

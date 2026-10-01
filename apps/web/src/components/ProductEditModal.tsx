@@ -1,8 +1,8 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useMarketplace } from '../context/MarketplaceContext';
-import { Product, StockStatus } from '../types';
-import { X, Plus, Trash2, CheckCircle2, Layers, Tag, DollarSign, Clock, Truck, AlertCircle, ShieldAlert, FileText, Eye } from 'lucide-react';
+import { Product, StockStatus, ProductCategory } from '../types';
+import { X, Plus, Trash2, CheckCircle2, Layers, Tag, DollarSign, Clock, Truck, AlertCircle, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { processProductImage } from '../utils/imageUtils';
 
@@ -36,6 +36,53 @@ export const ProductEditModal: React.FC = () => {
   const [specs, setSpecs] = useState<{ key: string; value: string }[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Helper to recursively find any category by ID across nested trees
+  const findCategoryById = (id: string, list: ProductCategory[]): ProductCategory | undefined => {
+    for (const c of list) {
+      if (c.id === id) return c;
+      if (c.subcategories && c.subcategories.length > 0) {
+        const found = findCategoryById(id, c.subcategories);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  };
+
+  // Group and list categories from backend DB (Level 3 / leaf subcategories)
+  const categoryGroups = useMemo(() => {
+    const groups: { parentName: string; items: { id: string; name: string; level?: number }[] }[] = [];
+
+    categories.forEach(cat => {
+      // Check if top-level has subcategories (Level 2 & Level 3)
+      if (cat.subcategories && cat.subcategories.length > 0) {
+        const leafItems: { id: string; name: string; level?: number }[] = [];
+
+        cat.subcategories.forEach(sub => {
+          if (sub.subcategories && sub.subcategories.length > 0) {
+            // Level 3 subcategories
+            sub.subcategories.forEach(l3 => {
+              leafItems.push({ id: l3.id, name: `${sub.name} › ${l3.name}`, level: l3.level || 3 });
+            });
+          } else {
+            // Level 2 / Subcategory leaf
+            leafItems.push({ id: sub.id, name: sub.name, level: sub.level || 2 });
+          }
+        });
+
+        if (leafItems.length > 0) {
+          groups.push({ parentName: cat.name, items: leafItems });
+        } else {
+          groups.push({ parentName: cat.name, items: [{ id: cat.id, name: cat.name, level: cat.level || 1 }] });
+        }
+      } else {
+        // Flat or direct vertical
+        groups.push({ parentName: 'General Verticals', items: [{ id: cat.id, name: cat.name, level: cat.level || 1 }] });
+      }
+    });
+
+    return groups;
+  }, [categories]);
 
   useEffect(() => {
     if (editingProduct) {
@@ -121,15 +168,20 @@ export const ProductEditModal: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !categoryId || !unit || !stockStatus || images.length === 0) {
-      setErrorMessage('Complete the required fields and upload a supplier product picture before publishing.');
+      setErrorMessage('Complete all required fields and upload a supplier product picture before publishing.');
       return;
     }
 
     setErrorMessage(null);
     setSubmitting(true);
 
-    const catObj = categories.find(c => c.id === categoryId);
-    if (!catObj) return;
+    const catObj = findCategoryById(categoryId, categories) || categories.find(c => c.id === categoryId);
+    if (!catObj) {
+      setErrorMessage('Selected category not found in backend database. Please re-select a category.');
+      setSubmitting(false);
+      return;
+    }
+
     const numericPrice = Number(price);
     const numericMoq = Number(moq);
     const numericStockQuantity = Number(stockQuantity) || 0;
@@ -215,7 +267,7 @@ export const ProductEditModal: React.FC = () => {
     <AnimatePresence>
       <div
         id="product-edit-modal-backdrop"
-        className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+        className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
         onClick={() => {
           setProductEditModalOpen(false);
           setEditingProduct(null);
@@ -232,7 +284,7 @@ export const ProductEditModal: React.FC = () => {
           {/* Header - Sleek Executive Slate Navy */}
           <div className="bg-[#1E293B] text-white px-6 py-5 border-b border-slate-700 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold shadow-sm shrink-0">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
@@ -240,7 +292,7 @@ export const ProductEditModal: React.FC = () => {
                   {editingProduct ? 'Edit Catalog Listing' : 'Publish Wholesale Product'}
                 </h2>
                 <p className="text-xs text-slate-300 mt-0.5">
-                  Configure B2B price tiers, MOQ, manual stock levels, and publication status
+                  Configure B2B price tiers, MOQ, manual stock levels, and Level 3 category selection
                 </p>
               </div>
             </div>
@@ -262,7 +314,7 @@ export const ProductEditModal: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-amber-50 border border-amber-300 rounded-xl p-4 flex items-start gap-3 text-slate-900"
+                className="bg-amber-50 border border-amber-300 rounded-xl p-4 flex items-start gap-3 text-slate-900 shadow-xs"
               >
                 <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div className="space-y-0.5">
@@ -370,49 +422,55 @@ export const ProductEditModal: React.FC = () => {
               )}
             </div>
 
-            {/* SECTION 2: General Info & Publication Status */}
+            {/* SECTION 2: General Info & Level 3 Category (Loaded from DB) */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-200">
                 <FileText className="w-4 h-4 text-teal-600" />
-                Product Identification & Status
+                Product Identification & Category Hierarchy
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
                   <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-                    Product Title / Name <span className="text-rose-500">*</span>
+                    Product Title / Industrial Model <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    placeholder="e.g. Three-Phase 15kW Centrifugal Slurry Pump"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
+                    placeholder="e.g. Three-Phase Industrial Centrifugal Slurry Pump 15kW"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white transition-all"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-                    Category Vertical <span className="text-rose-500">*</span>
+                    Category (Loaded from Database) <span className="text-rose-500">*</span>
                   </label>
                   <select
                     required
                     value={categoryId}
                     onChange={e => setCategoryId(e.target.value)}
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 cursor-pointer"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600 focus:bg-white transition-all cursor-pointer shadow-xs"
                   >
-                    <option value="">Select Category...</option>
-                    {categories.map(c => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
+                    <option value="" className="bg-white text-slate-400 font-normal">
+                      ✓ Select Level 3 Category...
+                    </option>
+                    {categoryGroups.map((group, gIdx) => (
+                      <optgroup key={gIdx} label={`── ${group.parentName} ──`} className="bg-slate-100 text-slate-900 font-bold">
+                        {group.items.map(item => (
+                          <option key={item.id} value={item.id} className="bg-white text-slate-900 font-medium py-1">
+                            {item.name}
+                          </option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
                 </div>
               </div>
 
-              {/* Publication Status & Stock Status */}
+              {/* Publication Status & Stock Level */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
@@ -421,11 +479,11 @@ export const ProductEditModal: React.FC = () => {
                   <select
                     value={status}
                     onChange={e => setStatus(e.target.value)}
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600 cursor-pointer"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600 focus:bg-white cursor-pointer"
                   >
-                    <option value="published">🟢 Published (Live in Marketplace)</option>
-                    <option value="draft">📝 Save as Draft (Unpublished)</option>
-                    <option value="archived">📦 Archived (Hidden from Catalog)</option>
+                    <option value="published" className="bg-white text-emerald-700 font-bold">🟢 Published (Live in Marketplace)</option>
+                    <option value="draft" className="bg-white text-slate-700 font-bold">📝 Save as Draft (Unpublished)</option>
+                    <option value="archived" className="bg-white text-rose-700 font-bold">📦 Archived (Hidden from Catalog)</option>
                   </select>
                 </div>
 
@@ -437,11 +495,11 @@ export const ProductEditModal: React.FC = () => {
                     required
                     value={stockStatus}
                     onChange={e => setStockStatus(e.target.value as StockStatus)}
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 cursor-pointer"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white cursor-pointer"
                   >
-                    <option value="in_stock">In Stock (Normal Production)</option>
-                    <option value="low_stock">Low Stock (Limited Batch)</option>
-                    <option value="out_of_stock">Out of Stock (Pre-order Only)</option>
+                    <option value="in_stock" className="bg-white text-emerald-800">In Stock (Live from DB)</option>
+                    <option value="low_stock" className="bg-white text-amber-800">Low Stock (Limited Batch)</option>
+                    <option value="out_of_stock" className="bg-white text-slate-600">Out of Stock (Pre-order Only)</option>
                   </select>
                 </div>
               </div>
@@ -466,13 +524,13 @@ export const ProductEditModal: React.FC = () => {
                     value={price}
                     onChange={e => setPrice(e.target.value ? Number(e.target.value) : '')}
                     placeholder="e.g. 2500"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600 focus:bg-white"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-                    Minimum Order Quantity (MOQ) <span className="text-rose-500">*</span>
+                    Minimum Order Qty (MOQ) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -481,7 +539,7 @@ export const ProductEditModal: React.FC = () => {
                     value={moq}
                     onChange={e => setMoq(e.target.value ? Number(e.target.value) : '')}
                     placeholder="e.g. 5"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600 focus:bg-white"
                   />
                 </div>
 
@@ -495,21 +553,21 @@ export const ProductEditModal: React.FC = () => {
                     value={unit}
                     onChange={e => setUnit(e.target.value)}
                     placeholder="e.g. sets, pieces, rolls, kg"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-                    Available Stock Qty
+                    Current Stock Quantity
                   </label>
                   <input
                     type="number"
                     min="0"
                     value={stockQuantity}
                     onChange={e => setStockQuantity(e.target.value ? Number(e.target.value) : '')}
-                    placeholder="e.g. 250"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
+                    placeholder="Available quantity..."
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white"
                   />
                 </div>
               </div>
@@ -519,20 +577,20 @@ export const ProductEditModal: React.FC = () => {
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-200">
                 <Truck className="w-4 h-4 text-teal-600" />
-                Logistics & Description
+                Dispatch Availability & Description
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-                    Estimated Production Lead Time
+                    Dispatch Lead Time
                   </label>
                   <input
                     type="text"
                     value={leadTime}
                     onChange={e => setLeadTime(e.target.value)}
                     placeholder="e.g. 2-4 business days"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white"
                   />
                 </div>
 
@@ -545,7 +603,7 @@ export const ProductEditModal: React.FC = () => {
                     value={deliveryZones}
                     onChange={e => setDeliveryZones(e.target.value)}
                     placeholder="e.g. Addis Ababa, Oromia, Amhara, Sidama"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white"
                   />
                 </div>
               </div>
@@ -559,11 +617,11 @@ export const ProductEditModal: React.FC = () => {
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="Describe material grading, performance capacity, assembly requirements..."
-                  className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-medium focus:outline-none focus:border-teal-600"
+                  className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-medium focus:outline-none focus:border-teal-600 focus:bg-white"
                 />
               </div>
 
-              {/* Specs */}
+              {/* Specs Sheet */}
               <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-900 text-xs">Technical Specifications Sheet</span>

@@ -54,6 +54,9 @@ export interface ProductCategory {
   iconName: string;
   image: string;
   itemCount: number;
+  level?: number;
+  parentId?: string | null;
+  isLeaf?: boolean;
   subcategories?: ProductCategory[];
 }
 
