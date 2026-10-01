@@ -11,7 +11,8 @@
     "dev": "concurrently -n \"WEB,API\" -c \"cyan,yellow\" \"npm run dev --workspace=apps/web\" \"npm run start:dev --workspace=apps/backend\"",
     "dev:web": "npm run dev --workspace=apps/web",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
-    "build": "nx run-many -t build",
+    "build": "nx run-many -t build && mkdir -p dist && cp -r apps/web/out/* dist/ 2>/dev/null || true",
+    "build:web": "npm run build --workspace=apps/web && mkdir -p dist && cp -r apps/web/out/* dist/ 2>/dev/null || true",
     "lint": "nx run-many -t lint"
   },
   "devDependencies": {

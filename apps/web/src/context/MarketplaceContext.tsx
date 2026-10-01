@@ -99,7 +99,7 @@ interface MarketplaceContextType {
 
   // Actions
   // Product Management (Seller UC15)
-  addProduct: (productData: Omit<Product, 'id' | 'createdAt'>) => void;
+  addProduct: (productData: Omit<Product, 'id' | 'createdAt'>) => Promise<{ success: boolean; message?: string; limitReached?: boolean }>;
   updateProduct: (id: string, productData: Partial<Product>) => void;
   toggleProductStock: (productId: string, newStatus: StockStatus) => void;
   deleteProduct: (id: string) => void;
@@ -634,7 +634,7 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   // Product Management via Backend Database API
-  const addProduct = async (productData: Omit<Product, 'id' | 'createdAt'>) => {
+  const addProduct = async (productData: Omit<Product, 'id' | 'createdAt'>): Promise<{ success: boolean; message?: string; limitReached?: boolean }> => {
     try {
       const res = await api.createProduct({
         name: productData.name,
@@ -654,7 +654,25 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
         priceTiers: productData.priceTiers,
       });
 
-      if (res.data?.id) {
+      if (res.data?.success === false || res.error) {
+        const errorMsg = res.data?.message || res.error?.message || 'Listing limit reached. Please upgrade your subscription plan.';
+        if (currentUser) {
+          triggerNotificationAndSMS(
+            currentUser.id,
+            'Subscription Plan Limit Reached',
+            errorMsg,
+            'system',
+            currentUser.phone
+          );
+        }
+        return {
+          success: false,
+          message: errorMsg,
+          limitReached: Boolean(res.data?.limitReached),
+        };
+      }
+
+      if (res.data?.id || res.data?.data?.id) {
         await refreshProductsFromApi();
       } else {
         const newProd: Product = {
@@ -665,25 +683,21 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
         };
         setProducts(prev => [newProd, ...prev]);
       }
-    } catch (err) {
-      console.error('Failed to save product in database:', err);
-      const newProd: Product = {
-        ...productData,
-        id: `prod-${Date.now()}`,
-        createdAt: new Date().toISOString().split('T')[0],
-        stockLastUpdated: 'Just now',
-      };
-      setProducts(prev => [newProd, ...prev]);
-    }
 
-    if (currentUser) {
-      triggerNotificationAndSMS(
-        currentUser.id,
-        'Listing Saved to Database',
-        `Product "${productData.name}" has been stored in PostgreSQL catalog database.`,
-        'system',
-        currentUser.phone
-      );
+      if (currentUser) {
+        triggerNotificationAndSMS(
+          currentUser.id,
+          'Listing Saved to Database',
+          `Product "${productData.name}" has been stored in PostgreSQL catalog database.`,
+          'system',
+          currentUser.phone
+        );
+      }
+
+      return { success: true };
+    } catch (err: any) {
+      console.error('Failed to save product in database:', err);
+      return { success: false, message: err.message || 'Failed to save product.' };
     }
   };
 

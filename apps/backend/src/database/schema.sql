@@ -81,6 +81,11 @@ CREATE TABLE IF NOT EXISTS businesses (
   verified_at TIMESTAMPTZ,
   verified_by UUID REFERENCES users(id),
   description TEXT,
+  subscription_plan VARCHAR(50) NOT NULL DEFAULT 'FREE',
+  subscription_start_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  subscription_end_date TIMESTAMPTZ,
+  subscription_status VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
+  listing_limit INTEGER NOT NULL DEFAULT 5,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

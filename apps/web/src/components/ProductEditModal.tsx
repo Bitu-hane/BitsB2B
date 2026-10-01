@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { Product, StockStatus } from '../types';
-import { X, Plus, Trash2, CheckCircle2, Layers, Tag, DollarSign, Clock, Truck } from 'lucide-react';
+import { X, Plus, Trash2, CheckCircle2, Layers, Tag, DollarSign, Clock, Truck, AlertCircle, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { processProductImage } from '../utils/imageUtils';
 
@@ -33,6 +33,8 @@ export const ProductEditModal: React.FC = () => {
     { key: 'Material', value: 'Commercial Grade' },
     { key: 'Warranty', value: '12 Months' },
   ]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (editingProduct) {
@@ -85,9 +87,12 @@ export const ProductEditModal: React.FC = () => {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
+
+    setErrorMessage(null);
+    setSubmitting(true);
 
     const catObj = categories.find(c => c.id === categoryId) || categories[0];
     const parsedSpecs: Record<string, string> = {};
@@ -121,8 +126,10 @@ export const ProductEditModal: React.FC = () => {
         specifications: parsedSpecs,
         priceTiers,
       });
+      setProductEditModalOpen(false);
+      setEditingProduct(null);
     } else {
-      addProduct({
+      const res = await addProduct({
         name,
         categoryId: catObj.id,
         categoryName: catObj.name,
@@ -145,10 +152,17 @@ export const ProductEditModal: React.FC = () => {
         specifications: parsedSpecs,
         featured: false,
       });
-    }
 
-    setProductEditModalOpen(false);
-    setEditingProduct(null);
+      if (!res.success) {
+        setErrorMessage(res.message || 'Product listing limit reached. Upgrade subscription to publish more products.');
+        setSubmitting(false);
+        return;
+      }
+
+      setProductEditModalOpen(false);
+      setEditingProduct(null);
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -195,6 +209,17 @@ export const ProductEditModal: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+            {/* Subscription Limit / Validation Error Banner */}
+            {errorMessage && (
+              <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 flex items-start gap-3 text-[#1B2340]">
+                <ShieldAlert className="w-5 h-5 text-[#C08829] shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <span className="font-bold block text-sm text-[#1B2340]">Subscription Limitation</span>
+                  <span className="text-xs text-[#6B7078] block leading-relaxed">{errorMessage}</span>
+                </div>
+              </div>
+            )}
+
             {/* Title & Category */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="sm:col-span-2">

@@ -31,7 +31,14 @@ export class DatabaseInitService implements OnApplicationBootstrap {
         if (schemaPath) {
           const sql = fs.readFileSync(schemaPath, 'utf8');
           await this.dataSource.query(sql);
-          this.logger.log(`🐘 PostgreSQL schema.sql (${path.basename(schemaPath)}) executed: all tables & indexes verified and ready.`);
+
+          // Run the focused, idempotent migration after the baseline schema exists.
+          // This applies the attributes to existing installations and records the run.
+          const appliedMigrations = await this.dataSource.runMigrations();
+
+          this.logger.log(
+            `🐘 PostgreSQL schema.sql (${path.basename(schemaPath)}) executed; ${appliedMigrations.length} migration(s) applied.`,
+          );
         } else {
           this.logger.warn(`⚠️ schema.sql not found in search paths.`);
         }

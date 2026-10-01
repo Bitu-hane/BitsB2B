@@ -12,6 +12,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
 import { DatabaseInitService } from './database/database-init.service';
+import { AddSubscriptionAttributesToBusiness1760000000000 } from './database/migrations/1760000000000-AddSubscriptionAttributesToBusiness';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DatabaseInitService } from './database/database-init.service';
       database: process.env.DB_NAME || 'bitsb2b',
       autoLoadEntities: true,
       synchronize: false,
+      migrations: [AddSubscriptionAttributesToBusiness1760000000000],
       ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     }),
     AuthModule,

@@ -4,6 +4,10 @@ import path from 'node:path';
 const nextConfig = {
   reactStrictMode: true,
   devIndicators: false,
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
   turbopack: {
     root: path.resolve('.'),
   },

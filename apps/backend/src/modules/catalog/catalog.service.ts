@@ -443,6 +443,58 @@ export class CatalogService {
           sellerBusinessId = createdBiz[0].id;
         }
       }
+      // --- Seller Subscription & Listing Limit Enforcement ---
+      if (sellerBusinessId) {
+        const subRes = await this.dataSource.query(
+          `SELECT subscription_plan AS "subscriptionPlan",
+                  subscription_start_date AS "subscriptionStartDate",
+                  subscription_end_date AS "subscriptionEndDate",
+                  subscription_status AS "subscriptionStatus",
+                  listing_limit AS "listingLimit"
+           FROM businesses WHERE id = $1`,
+          [sellerBusinessId],
+        );
+
+        if (subRes && subRes.length > 0) {
+          const bizSub = subRes[0];
+          const listingLimit = Number(bizSub.listingLimit) || 5;
+          const subStatus = bizSub.subscriptionStatus || 'ACTIVE';
+          const planName = bizSub.subscriptionPlan || 'FREE';
+          const endDate = bizSub.subscriptionEndDate ? new Date(bizSub.subscriptionEndDate) : null;
+
+          // Check if subscription has expired
+          if (endDate && endDate < new Date()) {
+            return {
+              success: false,
+              message: `Your seller subscription (${planName}) expired on ${endDate.toLocaleDateString()}. Please renew your subscription to publish new product listings.`,
+            };
+          }
+
+          if (subStatus === 'EXPIRED' || subStatus === 'CANCELLED') {
+            return {
+              success: false,
+              message: `Your seller subscription status is ${subStatus}. Please activate a subscription plan to add new product listings.`,
+            };
+          }
+
+          // Count existing active & published products for this seller business
+          const countRes = await this.dataSource.query(
+            `SELECT COUNT(*)::int AS count FROM products WHERE seller_business_id = $1`,
+            [sellerBusinessId],
+          );
+          const currentCount = countRes[0]?.count || 0;
+
+          if (currentCount >= listingLimit) {
+            return {
+              success: false,
+              message: `Listing limit reached (${currentCount}/${listingLimit} listings used on ${planName} plan). To publish a 6th listing, please upgrade your subscription plan.`,
+              limitReached: true,
+              currentCount,
+              listingLimit,
+            } as any;
+          }
+        }
+      }
 
       // Safely resolve category ID (handling UUID vs slug vs default fallback)
       let categoryId: string | null = null;
