@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { PaymentMethod, DeliveryAddress } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { CanvasProductImage } from './CanvasProductImage';
 
 export const PlaceOrderModal: React.FC = () => {
   const {
@@ -177,10 +178,11 @@ export const PlaceOrderModal: React.FC = () => {
           <form onSubmit={handleConfirmOrder} className="p-6 overflow-y-auto space-y-6 flex-1">
             {/* Product Summary Row */}
             <div className="p-4 bg-[#FAF7F2] rounded-xl border border-[#E5DFD5] flex items-center gap-4">
-              <img
+              <CanvasProductImage
                 src={orderTargetProduct.images[0]}
                 alt={orderTargetProduct.name}
-                className="w-16 h-16 rounded-lg object-cover border border-[#D8CFBF] bg-white shrink-0"
+                className="w-full h-full object-contain"
+                containerClassName="w-16 h-16 rounded-lg bg-white border border-[#D8CFBF] overflow-hidden shrink-0"
               />
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-bold text-[#112225] truncate">

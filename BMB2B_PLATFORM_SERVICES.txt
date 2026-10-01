@@ -1,0 +1,43 @@
+================================================================================
+                       BM B2B MARKETPLACE PLATFORM SERVICES
+          Ethiopia's Wholesale & Enterprise Digital B2B E-Commerce Platform
+================================================================================
+
+1. VERIFIED ENTERPRISE IDENTITY & BUSINESS REGISTRATION
+   - Digital registration for Importers, Manufacturers, Producers, Wholesalers, 
+     Resellers, and Institutional Buyers in Ethiopia.
+   - Formal trade license number and Tax Identification Number (TIN) verification.
+   - Verified Supplier badges to ensure trust and filter out unverified traders.
+
+2. WHOLESALE PRODUCT CATALOG & BULK TIERED PRICING
+   - Multi-category wholesale sourcing across Industrial Machinery, Construction 
+     Materials, Packaging & Printing, Agriculture, Automotive Parts, Chemicals, 
+     Furniture, and Electronics.
+   - Tiered volume pricing (discounted per-unit pricing based on order quantity).
+   - Enforced Minimum Order Quantities (MOQ) and real-time stock availability status.
+
+3. ESCROW TRADE ASSURANCE & SECURE PAYMENTS
+   - Integrated digital payment gateways supporting Telebirr, CBE Birr, and Bank Transfers.
+   - Escrow Protection: Buyer payments are securely held in escrow and only released 
+     to the seller after the buyer inspects and confirms delivery.
+   - Dispute management and refund request mechanism for damaged or non-conforming goods.
+
+4. STRUCTURED RFQs & SUPPLIER INQUIRIES
+   - Structured Request for Quotations (RFQs) for custom bulk order requirements.
+   - Direct messaging tools for requesting physical product samples, technical 
+     specifications, and lead-time negotiations.
+   - Dedicated Inquiries Inbox for real-time buyer-seller communications.
+
+5. SELLER & SUPPLIER MANAGEMENT DASHBOARD
+   - Inventory management for listing products, stock levels, and technical specifications.
+   - Order fulfillment workflow tracking (Order Placed -> Escrow Funded -> Dispatched -> Delivered -> Escrow Released).
+   - Business performance metrics, response rates, and sales analytics.
+
+6. BILINGUAL ENTERPRISE SUPPORT (AMHARIC & ENGLISH)
+   - Complete localized interface in Amharic (አማርኛ) and English.
+   - Persistent language preferences tailored for Ethiopian enterprises and local traders.
+
+7. REAL-TIME NOTIFICATIONS & SMS ALERTS
+   - Instant SMS notifications sent directly to business mobile numbers (+251).
+   - In-app notification center for order milestones, escrow status changes, and new inquiry replies.
+================================================================================

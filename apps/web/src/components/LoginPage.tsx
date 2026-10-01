@@ -54,7 +54,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] text-[#162C30] flex flex-col font-sans selection:bg-[#C85A32]/20 selection:text-[#112225]">
+    <div className="min-h-screen bg-[#FBF9F5] text-[#162C30] flex flex-col font-sans selection:bg-[#C08829]/20 selection:text-[#112225]">
       {/* 1. Header with Top Language Switcher */}
       <AuthHeader />
 
@@ -64,18 +64,18 @@ export const LoginPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          className="w-full max-w-md bg-[#FFFFFF] rounded-2xl border border-[#E5DFD5] shadow-2xl overflow-hidden"
+          className="w-full max-w-md bg-white rounded-[18px] border border-[#E2E4EA] shadow-xl overflow-hidden"
         >
-          {/* Card Header Banner */}
-          <div className="bg-[#112225] text-[#F7F4EE] p-6 text-center border-b border-[#274B52] relative overflow-hidden">
-            <div className="absolute top-0 right-0 translate-x-4 -translate-y-4 w-28 h-28 bg-[#C85A32]/10 rounded-full blur-xl pointer-events-none" />
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-[#C85A32] to-[#E27D56] text-white shadow-lg shadow-[#C85A32]/30 mb-3">
+          {/* Card Header Banner (Ledger Navy Theme matching catalog header & footer) */}
+          <div className="bg-[#1B2340] text-[#F4EFE3] p-6 text-center border-b border-[#2B3558] relative overflow-hidden">
+            <div className="absolute top-0 right-0 translate-x-4 -translate-y-4 w-28 h-28 bg-[#C08829]/10 rounded-full blur-xl pointer-events-none" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#C08829]/20 border border-[#C08829]/30 text-[#E2B159] shadow-md shadow-[#C08829]/10 mb-3">
               <Building2 className="w-6 h-6" />
             </div>
-            <h1 className="text-xl font-black tracking-tight text-[#F7F4EE]">
+            <h1 className="font-serif font-bold text-xl tracking-tight text-[#F4EFE3]">
               {t('auth.loginTitle')}
             </h1>
-            <p className="text-xs text-[#A8A196] mt-1">
+            <p className="text-xs text-[#A7AECB] mt-1">
               {t('auth.loginSubtitle')}
             </p>
           </div>
@@ -102,12 +102,12 @@ export const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Phone Field */}
               <div>
-                <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                   {t('auth.phoneLabel')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#888]">
-                    <Phone className="w-4 h-4 text-[#C85A32]" />
+                    <Phone className="w-4 h-4 text-[#C08829]" />
                   </div>
                   <input
                     id="input-login-phone"
@@ -116,19 +116,19 @@ export const LoginPage: React.FC = () => {
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder={t('auth.phonePlaceholder')}
-                    className="w-full pl-10 pr-3.5 py-3 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32] focus:ring-2 focus:ring-[#C85A32]/20 transition-all"
+                    className="w-full pl-10 pr-3.5 py-3 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829] focus:ring-2 focus:ring-[#C08829]/20 transition-all"
                   />
                 </div>
               </div>
 
               {/* Password Field */}
               <div>
-                <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                   {t('auth.passwordLabel')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#888]">
-                    <Lock className="w-4 h-4 text-[#C85A32]" />
+                    <Lock className="w-4 h-4 text-[#C08829]" />
                   </div>
                   <input
                     id="input-login-password"
@@ -137,7 +137,7 @@ export const LoginPage: React.FC = () => {
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder={t('auth.passwordPlaceholder')}
-                    className="w-full pl-10 pr-3.5 py-3 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32] focus:ring-2 focus:ring-[#C85A32]/20 transition-all"
+                    className="w-full pl-10 pr-3.5 py-3 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829] focus:ring-2 focus:ring-[#C08829]/20 transition-all"
                   />
                 </div>
               </div>
@@ -147,45 +147,45 @@ export const LoginPage: React.FC = () => {
                 id="btn-submit-login"
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 px-4 bg-gradient-to-r from-[#C85A32] to-[#E27D56] hover:from-[#B54E28] hover:to-[#D46E47] text-white font-bold text-sm rounded-xl shadow-lg shadow-[#C85A32]/30 hover:shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70"
+                className="w-full py-3.5 px-4 bg-[#1B2340] hover:bg-[#2A3760] text-[#F4EFE3] font-bold text-sm rounded-xl shadow-md shadow-[#1B2340]/20 hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#C08829]" />
                     <span>Checking Database...</span>
                   </>
                 ) : (
                   <>
                     <span>{t('auth.login')}</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 text-[#C08829]" />
                   </>
                 )}
               </button>
             </form>
 
             {/* Value Proposition Pills */}
-            <div className="pt-2 flex items-center justify-around border-t border-[#F0EBE1] text-[11px] text-[#6E685F]">
-              <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#C85A32]" /> Verified Trade
+            <div className="pt-2 flex items-center justify-around border-t border-[#E2E4EA] text-[11px] text-[#6B7078]">
+              <span className="flex items-center gap-1 font-semibold text-[#1E2128]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#C08829]" /> Verified Trade
               </span>
-              <span className="flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Escrow Protected
+              <span className="flex items-center gap-1 font-semibold text-[#1E2128]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#33553A]" /> Escrow Protected
               </span>
             </div>
           </div>
 
           {/* Bottom Sign Up Navigation Box */}
-          <div className="bg-[#F7F4EE] p-4 text-center border-t border-[#E5DFD5]">
-            <p className="text-xs text-[#6E685F] mb-2 font-medium">
+          <div className="bg-[#F1F2F5] p-4 text-center border-t border-[#E2E4EA]">
+            <p className="text-xs text-[#6B7078] mb-2 font-medium">
               {t('auth.dontHaveAccount')}
             </p>
             <button
               id="btn-goto-signup"
               type="button"
               onClick={() => setAuthView('signup')}
-              className="w-full py-2.5 px-4 bg-[#112225] hover:bg-[#1A3337] text-[#F7F4EE] font-bold text-xs rounded-xl border border-[#274B52] transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 bg-[#C08829] hover:bg-[#A97520] text-[#1B2340] font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
             >
-              <UserPlus className="w-4 h-4 text-[#E27D56]" />
+              <UserPlus className="w-4 h-4" />
               <span>{t('auth.signUpNow')}</span>
             </button>
           </div>

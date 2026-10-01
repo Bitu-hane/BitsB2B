@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ProductCategory } from '../types';
+import { CanvasProductImage } from './CanvasProductImage';
 
 interface SubcategoryItem {
   name: string;
@@ -376,11 +377,11 @@ export const CategoriesForYou: React.FC = () => {
                       </h3>
                     </div>
 
-                    <div className="my-3 bg-[#FBF9F5] rounded-xl p-3 border border-[#EFEAE0] flex items-center justify-center overflow-hidden">
-                      <img
+                    <div className="my-3 bg-[#FBF9F5] rounded-xl p-3 border border-[#EFEAE0] flex items-center justify-center overflow-hidden h-36">
+                      <CanvasProductImage
                         src={freqItem1.images[0]}
                         alt={freqItem1.name}
-                        className="h-36 object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg"
+                        className="h-full object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg"
                       />
                     </div>
 
@@ -410,11 +411,11 @@ export const CategoriesForYou: React.FC = () => {
                       </h3>
                     </div>
 
-                    <div className="my-3 bg-[#FBF9F5] rounded-xl p-3 border border-[#EFEAE0] flex items-center justify-center overflow-hidden">
-                      <img
+                    <div className="my-3 bg-[#FBF9F5] rounded-xl p-3 border border-[#EFEAE0] flex items-center justify-center overflow-hidden h-36">
+                      <CanvasProductImage
                         src={freqItem2.images[0]}
                         alt={freqItem2.name}
-                        className="h-36 object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg"
+                        className="h-full object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg"
                       />
                     </div>
 
@@ -444,11 +445,11 @@ export const CategoriesForYou: React.FC = () => {
                       </h3>
                     </div>
 
-                    <div className="my-3 bg-[#FBF9F5] rounded-xl p-3 border border-[#EFEAE0] flex items-center justify-center overflow-hidden">
-                      <img
+                    <div className="my-3 bg-[#FBF9F5] rounded-xl p-3 border border-[#EFEAE0] flex items-center justify-center overflow-hidden h-36">
+                      <CanvasProductImage
                         src={freqItem3.images[0]}
                         alt={freqItem3.name}
-                        className="h-36 object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg"
+                        className="h-full object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg"
                       />
                     </div>
 

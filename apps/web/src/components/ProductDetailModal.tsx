@@ -18,6 +18,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { CanvasProductImage } from './CanvasProductImage';
 
 export const ProductDetailModal: React.FC = () => {
   const {
@@ -117,10 +118,10 @@ export const ProductDetailModal: React.FC = () => {
               {/* Image Gallery (Left 5 cols) */}
               <div className="md:col-span-5 space-y-3">
                 <div className="aspect-[4/3] rounded-xl overflow-hidden bg-[#F3EFE9] border border-[#E5DFD5] relative">
-                  <img
+                  <CanvasProductImage
                     src={selectedProduct.images[activeImageIndex] || selectedProduct.images[0]}
                     alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                   <div className="absolute top-3 left-3">
                     <span className="bg-[#112225]/80 backdrop-blur-xs text-[#F7F4EE] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
@@ -140,7 +141,7 @@ export const ProductDetailModal: React.FC = () => {
                           activeImageIndex === idx ? 'border-[#C85A32] shadow-sm' : 'border-[#E5DFD5] opacity-70 hover:opacity-100'
                         }`}
                       >
-                        <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+                        <CanvasProductImage src={img} alt={`Thumb ${idx}`} className="w-full h-full object-contain" />
                       </button>
                     ))}
                   </div>

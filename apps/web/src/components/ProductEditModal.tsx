@@ -4,6 +4,7 @@ import { useMarketplace } from '../context/MarketplaceContext';
 import { Product, StockStatus } from '../types';
 import { X, Plus, Trash2, CheckCircle2, Layers, Tag, DollarSign, Clock, Truck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { processProductImage } from '../utils/imageUtils';
 
 export const ProductEditModal: React.FC = () => {
   const {
@@ -319,33 +320,101 @@ export const ProductEditModal: React.FC = () => {
               </div>
             </div>
 
-            {/* Image URL & Delivery Zones */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Primary Image URL
+            {/* Image URL / File Upload with Automatic Canvas Processor */}
+            <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#E5DFD5] space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block font-semibold text-[#112225]">
+                  Supplier Product Picture (Auto-Canvas Processed) *
                 </label>
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={e => setImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                />
+                <span className="text-[10px] font-bold text-[#C85A32] bg-[#C85A32]/10 px-2 py-0.5 rounded-md">
+                  Auto 1:1 Canvas Frame
+                </span>
               </div>
 
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Eligible Freight Zones (Comma Separated)
-                </label>
-                <input
-                  type="text"
-                  value={deliveryZones}
-                  onChange={e => setDeliveryZones(e.target.value)}
-                  placeholder="Addis Ababa, Oromia, Hawassa IP, Dire Dawa"
-                  className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-[#6E685F] mb-1">
+                    Option A: Upload Picture File
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        try {
+                          const canvasUrl = await processProductImage(file, { targetSize: 800, addBrandTag: true });
+                          setImageUrl(canvasUrl);
+                        } catch (err) {
+                          console.error('Failed to process uploaded file with canvas:', err);
+                        }
+                      }
+                    }}
+                    className="w-full text-xs text-[#112225] file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#112225] file:text-white hover:file:bg-[#C85A32] file:cursor-pointer"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-[#6E685F] mb-1">
+                    Option B: Paste Image Web URL
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={imageUrl}
+                      onChange={e => setImageUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="flex-1 px-3 py-1.5 bg-white border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                    />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (imageUrl) {
+                          try {
+                            const canvasUrl = await processProductImage(imageUrl, { targetSize: 800, addBrandTag: true });
+                            setImageUrl(canvasUrl);
+                          } catch (err) {
+                            console.error('Failed to process URL with canvas:', err);
+                          }
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-[#C85A32] text-white font-semibold text-xs rounded-xl hover:bg-[#A34320] transition-colors cursor-pointer shrink-0"
+                    >
+                      Fit Canvas
+                    </button>
+                  </div>
+                </div>
               </div>
+
+              {/* Live Canvas Preview */}
+              {imageUrl && (
+                <div className="mt-2 flex items-center gap-3 p-2 bg-white rounded-lg border border-[#E5DFD5]">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden border border-[#D8CFBF] shrink-0 bg-[#F8F9FA] flex items-center justify-center">
+                    <img src={imageUrl} alt="Canvas preview" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="text-[11px] text-[#6E685F]">
+                    <div className="font-bold text-[#112225] flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Canvas Processed (1:1 Aspect Ratio)</span>
+                    </div>
+                    <span>Edge background auto-sampled &amp; product safety margin applied.</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Freight & Delivery Zones */}
+            <div>
+              <label className="block font-semibold text-[#112225] mb-1">
+                Eligible Freight Zones (Comma Separated)
+              </label>
+              <input
+                type="text"
+                value={deliveryZones}
+                onChange={e => setDeliveryZones(e.target.value)}
+                placeholder="Addis Ababa Metro, Oromia, Hawassa IP, Dire Dawa"
+                className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
+              />
             </div>
 
             {/* Description */}

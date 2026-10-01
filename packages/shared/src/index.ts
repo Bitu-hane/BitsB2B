@@ -6,6 +6,50 @@ export enum UserRole {
   ADMIN = 'ADMIN',
 }
 
+export enum StaffRole {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  VERIFICATION_OFFICER = 'VERIFICATION_OFFICER',
+  LISTINGS_MODERATOR = 'LISTINGS_MODERATOR',
+  ESCROW_OFFICER = 'ESCROW_OFFICER',
+  DISPUTE_MEDIATOR = 'DISPUTE_MEDIATOR',
+  ANALYST = 'ANALYST',
+}
+
+export enum BusinessSubRole {
+  IMPORTER = 'importer',
+  EXPORTER = 'exporter',
+  PRODUCER = 'producer',
+  WHOLESALER = 'wholesaler',
+  DISTRIBUTOR = 'distributor',
+  RESELLER = 'reseller',
+  INSTITUTIONAL_BUYER = 'institutional_buyer',
+}
+
+export enum VerificationState {
+  PENDING_REVIEW = 'PENDING_REVIEW',
+  VERIFIED = 'VERIFIED',
+  REJECTED = 'REJECTED',
+  MORE_INFO_NEEDED = 'MORE_INFO_NEEDED',
+  SUSPENDED = 'SUSPENDED',
+  REVOKED = 'REVOKED',
+}
+
+export const ESCROW_RELEASE_THRESHOLD_ETB = 500000;
+
+export interface PlatformMetrics {
+  totalUsers: number;
+  totalBusinesses: number;
+  verifiedBusinesses: number;
+  pendingVerifications: number;
+  totalListings: number;
+  pendingListings: number;
+  totalOrders: number;
+  activeEscrowAmount: number;
+  releasedEscrowAmount: number;
+  totalDisputes: number;
+  openDisputes: number;
+}
+
 export interface UserProfile {
   id: string;
   phoneNumber: string;

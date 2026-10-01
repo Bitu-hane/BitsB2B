@@ -1,2 +1,49 @@
 @import "tailwindcss";
 @config "../../tailwind.config.js";
+
+:root {
+  --ink: #1B2340;
+  --ink-2: #242E52;
+  --ink-3: #2E3A63;
+  --paper: #FFFFFF;
+  --paper-deep: #F1F2F5;
+  --paper-card: #FFFFFF;
+  --line: #E2E4EA;
+  --line-soft: #ECEDF1;
+  --brass: #C08829;
+  --brass-deep: #9C6B1A;
+  --brass-tint: #F2DFAE;
+  --bottle: #33553A;
+  --bottle-deep: #223B28;
+  --bottle-tint: #DCE7DC;
+  --clay: #A6432B;
+  --clay-tint: #F3DBCF;
+  --text: #1E2128;
+  --text-muted: #6B7078;
+  --text-onink: #F4EFE3;
+  --text-onink-muted: #A7AECB;
+  --radius-s: 5px;
+  --radius-m: 11px;
+  --radius-l: 18px;
+  --serif: 'Spectral', Georgia, serif;
+  --sans: 'IBM Plex Sans', -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+body {
+  font-family: var(--sans);
+  background-color: var(--paper-deep);
+  color: var(--text);
+}
+
+.font-serif {
+  font-family: var(--serif);
+}
+
+.font-mono {
+  font-family: var(--mono);
+}
+
+.font-sans {
+  font-family: var(--sans);
+}

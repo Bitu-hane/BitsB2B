@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { MarketplaceProvider, useMarketplace } from './context/MarketplaceContext';
 import { SMSNotificationBanner } from './components/SMSNotificationBanner';
@@ -56,7 +58,7 @@ const MarketplaceContent: React.FC = () => {
 
   // Filter products by category, search query, verified seller, stock status, delivery zone
   const filteredProducts = products.filter(product => {
-    if (selectedCategory !== 'all' && product.categoryId !== selectedCategory) {
+    if (selectedCategory !== 'all' && product.categoryId !== selectedCategory && product.categoryName !== selectedCategory) {
       return false;
     }
     if (searchQuery.trim()) {
@@ -105,189 +107,199 @@ const MarketplaceContent: React.FC = () => {
       ) : (
         /* Catalog & Home View */
         <main className="flex-1 pb-16">
-          {/* Category Navigation Bar */}
+          {/* Sticky Folder Tabs Bar */}
           <CategoryNav />
 
-          {/* Hero Search Section (Alibaba Style Mode Tabs & Pill Input) */}
-          <HeroSearch />
+          {/* Catalog Top Subheader & Filter Pills Bar (Screenshot 3 Layout) */}
+          <div className="bg-[#F1F2F5] border-b border-[#E2E4EA] py-6">
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-8 flex flex-wrap items-center justify-between gap-4">
+              <h2 className="font-serif font-semibold text-[23px] text-[#1E2128]">
+                Wholesale catalog
+              </h2>
 
-          {/* Categories for You Box & Frequently Searched Grid (Alibaba Style) */}
-          <CategoriesForYou />
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-            {/* Sourcing Banner / Value Proposition */}
-            <div className="bg-[#112225] text-[#F7F4EE] rounded-2xl p-6 md:p-8 border border-[#274B52] shadow-xl relative overflow-hidden flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              <div className="max-w-2xl space-y-3 z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C85A32]/20 border border-[#C85A32]/30 text-[#E27D56] text-xs font-bold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Verified Industrial &amp; Wholesale Suppliers in Ethiopia
-                </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F7F4EE] leading-tight">
-                  Direct Factory &amp; Importer Sourcing with Guaranteed Escrow
-                </h1>
-                <p className="text-xs sm:text-sm text-[#A8A196] leading-relaxed">
-                  Source industrial machinery, packaging boxes, vehicle parts, and bulk supplies.
-                  All payments are held securely in <strong>Telebirr &amp; CBE Birr Escrow</strong> until physical delivery confirmation.
-                </p>
-
-                {/* Feature Chips */}
-                <div className="pt-2 flex flex-wrap gap-4 text-xs text-[#EBE5DA]">
-                  <div className="flex items-center gap-1.5 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-[#C85A32]" />
-                    <span>Tiered Wholesale MOQ Pricing</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-[#C85A32]" />
-                    <span>Live Stock Status Management</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-[#C85A32]" />
-                    <span>Instant Regional Dispatch Alerts</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Decorative background grid pattern */}
-              <div className="absolute right-0 top-0 bottom-0 w-96 opacity-10 pointer-events-none bg-[radial-gradient(#FFF_1px,transparent_1px)] [background-size:16px_16px]" />
-            </div>
-
-            {/* Filter & Subheader Row */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-              <div>
-                <h2 className="text-lg font-bold text-[#112225] flex items-center gap-2">
-                  <span>
-                    {selectedCategory === 'all'
-                      ? 'All Wholesale Products'
-                      : categories.find(c => c.id === selectedCategory)?.name}
-                  </span>
-                  <span className="text-xs font-normal text-[#6E685F]">
-                    ({filteredProducts.length} items found)
-                  </span>
-                </h2>
-                {searchQuery && (
-                  <p className="text-xs text-[#C85A32] mt-0.5">
-                    Filtering by keyword: <strong>"{searchQuery}"</strong>{' '}
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="underline text-xs text-[#888] hover:text-[#112225] ml-1 cursor-pointer"
-                    >
-                      Clear search
-                    </button>
-                  </p>
-                )}
-              </div>
-
-              {/* Interactive Filter Controls */}
-              <div className="flex flex-wrap items-center gap-2 text-xs">
-                {/* Verified Sellers Toggle (UC6) */}
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {/* Verified Toggle Pill */}
                 <button
                   id="filter-toggle-verified"
                   type="button"
                   onClick={() => setVerifiedOnly(!verifiedOnly)}
-                  className={`px-3 py-1.5 rounded-lg border font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold transition-colors cursor-pointer border ${
                     verifiedOnly
-                      ? 'bg-[#FEF3C7] border-[#F59E0B] text-[#92400E]'
-                      : 'bg-white border-[#D8CFBF] text-[#6E685F] hover:bg-[#FAF7F2]'
+                      ? 'bg-[#33553A] text-white border-[#33553A]'
+                      : 'bg-white text-[#1E2128] border-[#E2E4EA] hover:border-[#1E2128]'
                   }`}
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#D97706]" />
-                  <span>Verified Suppliers Only</span>
+                  <span className="text-xs">✓</span>
+                  <span>Verified suppliers only</span>
                 </button>
 
-                {/* In Stock Toggle (UC4/UC15) */}
+                {/* In Stock Toggle Pill */}
                 <button
                   id="filter-toggle-instock"
                   type="button"
                   onClick={() => setInStockOnly(!inStockOnly)}
-                  className={`px-3 py-1.5 rounded-lg border font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold transition-colors cursor-pointer border ${
                     inStockOnly
-                      ? 'bg-[#C85A32]/10 border-[#C85A32] text-[#C85A32]'
-                      : 'bg-white border-[#D8CFBF] text-[#6E685F] hover:bg-[#FAF7F2]'
+                      ? 'bg-[#33553A] text-white border-[#33553A]'
+                      : 'bg-white text-[#1E2128] border-[#E2E4EA] hover:border-[#1E2128]'
                   }`}
                 >
-                  <span>In Stock Only</span>
+                  <span>In stock only</span>
                 </button>
 
-                {/* Delivery Zone Selector */}
+                {/* Delivery Zone Selector Pill */}
                 <select
                   id="filter-select-zone"
                   value={selectedZone}
                   onChange={e => setSelectedZone(e.target.value)}
-                  className="px-3 py-1.5 bg-white border border-[#D8CFBF] rounded-lg text-xs font-semibold text-[#112225] focus:outline-none focus:border-[#C85A32] cursor-pointer"
+                  className="bg-white border border-[#E2E4EA] text-[#1E2128] px-3.5 py-2 rounded-full text-[13px] font-semibold focus:outline-none cursor-pointer"
                 >
-                  <option value="all">All Delivery Zones</option>
-                  <option value="Addis Ababa">Addis Ababa Metro</option>
+                  <option value="all">Addis Ababa Metro</option>
                   <option value="Oromia">Oromia Region</option>
                   <option value="Hawassa">Hawassa Industrial Park</option>
                   <option value="Dire Dawa">Dire Dawa Free Trade</option>
                 </select>
               </div>
             </div>
+          </div>
 
-            {/* Anonymous Visitor Prompt Notice if Not Logged In */}
-            {!currentUser && (
-              <div
-                id="anonymous-visitor-notice-banner"
-                className="p-4 bg-[#FAF7F2] rounded-2xl border border-[#D8CFBF] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#C85A32] text-white flex items-center justify-center shrink-0 font-bold">
-                    <Lock className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <strong className="text-[#112225]">B2B Member Wholesale Pricing is Protected</strong>
-                    <p className="text-[#6E685F]">
-                      Register your verified business or test-login to unlock transparent tiered pricing, submit RFQ inquiries, and place escrow orders.
-                    </p>
-                  </div>
+          {/* Catalog Body (2 Columns: Left Sidebar Filters + Right Product Grid) */}
+          <div className="max-w-[1240px] mx-auto px-4 sm:px-8 py-8 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
+            {/* Left Sidebar Filter Column */}
+            <aside className="space-y-6">
+              {/* Category Filter */}
+              <div className="filter-block">
+                <h5 className="font-serif italic font-semibold text-xs text-[#6B7078] uppercase tracking-wider mb-3">
+                  Category
+                </h5>
+                <div className="space-y-1.5 text-[13.5px]">
+                  <label className="flex items-center gap-2.5 cursor-pointer hover:text-[#C08829]">
+                    <input
+                      type="checkbox"
+                      checked={selectedCategory === 'all'}
+                      onChange={() => setSelectedCategory('all')}
+                      className="accent-[#33553A] w-[15px] h-[15px]"
+                    />
+                    <span>All Categories</span>
+                  </label>
+                  {categories.map(cat => (
+                    <label key={cat.id} className="flex items-center gap-2.5 cursor-pointer hover:text-[#C08829]">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategory === cat.id}
+                        onChange={() => setSelectedCategory(selectedCategory === cat.id ? 'all' : cat.id)}
+                        className="accent-[#33553A] w-[15px] h-[15px]"
+                      />
+                      <span>{cat.name}</span>
+                    </label>
+                  ))}
                 </div>
-
-                <button
-                  id="btn-banner-login-action"
-                  type="button"
-                  onClick={() => setAuthModalOpen(true)}
-                  className="px-4 py-2 bg-[#C85A32] hover:bg-[#A34320] text-white font-bold rounded-xl transition-colors cursor-pointer shrink-0 shadow-xs"
-                >
-                  Register / Login (100% Free)
-                </button>
               </div>
-            )}
 
-            {/* Product Catalog Grid */}
-            {filteredProducts.length === 0 ? (
-              <div className="p-16 text-center bg-white rounded-2xl border border-[#E5DFD5] space-y-3">
-                <div className="w-12 h-12 rounded-full bg-[#FAF7F2] flex items-center justify-center text-[#888] mx-auto">
-                  <Package className="w-6 h-6" />
+              {/* Delivery Zone Filter */}
+              <div className="filter-block pt-4 border-t border-[#E2E4EA]">
+                <h5 className="font-serif italic font-semibold text-xs text-[#6B7078] uppercase tracking-wider mb-3">
+                  Delivery zone
+                </h5>
+                <div className="space-y-1.5 text-[13.5px]">
+                  <label className="flex items-center gap-2.5 cursor-pointer hover:text-[#C08829]">
+                    <input
+                      type="checkbox"
+                      checked={selectedZone === 'all'}
+                      onChange={() => setSelectedZone('all')}
+                      className="accent-[#33553A] w-[15px] h-[15px]"
+                    />
+                    <span>Addis Ababa Metro</span>
+                  </label>
+                  <label className="flex items-center gap-2.5 cursor-pointer hover:text-[#C08829]">
+                    <input
+                      type="checkbox"
+                      checked={selectedZone === 'Oromia'}
+                      onChange={() => setSelectedZone(selectedZone === 'Oromia' ? 'all' : 'Oromia')}
+                      className="accent-[#33553A] w-[15px] h-[15px]"
+                    />
+                    <span>Oromia</span>
+                  </label>
+                  <label className="flex items-center gap-2.5 cursor-pointer hover:text-[#C08829]">
+                    <input
+                      type="checkbox"
+                      checked={selectedZone === 'Hawassa'}
+                      onChange={() => setSelectedZone(selectedZone === 'Hawassa' ? 'all' : 'Hawassa')}
+                      className="accent-[#33553A] w-[15px] h-[15px]"
+                    />
+                    <span>Hawassa</span>
+                  </label>
+                  <label className="flex items-center gap-2.5 cursor-pointer hover:text-[#C08829]">
+                    <input
+                      type="checkbox"
+                      checked={selectedZone === 'Nationwide'}
+                      onChange={() => setSelectedZone(selectedZone === 'Nationwide' ? 'all' : 'Nationwide')}
+                      className="accent-[#33553A] w-[15px] h-[15px]"
+                    />
+                    <span>Nationwide freight</span>
+                  </label>
                 </div>
-                <h3 className="text-sm font-bold text-[#112225]">No Products Match Filters</h3>
-                <p className="text-xs text-[#6E685F] max-w-sm mx-auto">
-                  Try clearing your search query or toggling off the strict verification filter.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedCategory('all');
-                    setSearchQuery('');
-                    setVerifiedOnly(false);
-                    setInStockOnly(false);
-                    setSelectedZone('all');
-                  }}
-                  className="px-4 py-2 bg-[#112225] hover:bg-[#274B52] text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer"
-                >
-                  Reset All Filters
-                </button>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {filteredProducts.map(product => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onSelect={p => setSelectedProduct(p)}
-                  />
-                ))}
+
+              {/* Minimum Order Qty Filter */}
+              <div className="filter-block pt-4 border-t border-[#E2E4EA]">
+                <h5 className="font-serif italic font-semibold text-xs text-[#6B7078] uppercase tracking-wider mb-3">
+                  Minimum order qty
+                </h5>
+                <div className="space-y-1.5 text-[13.5px]">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" className="accent-[#33553A] w-[15px] h-[15px]" />
+                    <span>Under 50 units</span>
+                  </label>
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" defaultChecked className="accent-[#33553A] w-[15px] h-[15px]" />
+                    <span>50–500 units</span>
+                  </label>
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" className="accent-[#33553A] w-[15px] h-[15px]" />
+                    <span>500+ units</span>
+                  </label>
+                </div>
               </div>
-            )}
+            </aside>
+
+            {/* Right Column: Product Grid */}
+            <section>
+              {filteredProducts.length === 0 ? (
+                <div className="p-16 text-center bg-white rounded-[18px] border border-dashed border-[#E2E4EA] space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-[#F1F2F5] flex items-center justify-center text-[#6B7078] mx-auto">
+                    <Package className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[#1E2128]">No Products Match Filters</h3>
+                  <p className="text-xs text-[#6B7078] max-w-sm mx-auto">
+                    Try clearing your search query or toggling off the filter checkboxes.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategory('all');
+                      setSearchQuery('');
+                      setVerifiedOnly(false);
+                      setInStockOnly(false);
+                      setSelectedZone('all');
+                    }}
+                    className="px-5 py-2.5 bg-[#1B2340] text-[#F4EFE3] hover:bg-[#223B28] text-xs font-semibold rounded-[7px] transition-colors cursor-pointer"
+                  >
+                    Reset All Filters
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
+                  {filteredProducts.map(product => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onSelect={p => setSelectedProduct(p)}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
           </div>
         </main>
       )}
@@ -302,31 +314,33 @@ const MarketplaceContent: React.FC = () => {
       <ProductEditModal />
       <NotificationDrawer />
 
-      {/* Footer */}
-      <footer className="w-full bg-[#112225] text-[#F7F4EE] border-t border-[#274B52] mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-xs">
-            {/* Col 1 */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#C85A32] flex items-center justify-center font-bold text-white text-base">
-                  BB
+      {/* 4. Footer (Exact Ledger Navy Theme from test.html & Screenshot 4) */}
+      <footer className="w-full bg-[#1B2340] text-[#A7AECB] pt-[50px] pb-[26px] mt-auto">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10">
+            {/* Col 1: Logo & Info */}
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-[36px] h-[36px] rounded-[8px] bg-[#C08829] font-serif font-bold text-base text-[#1B2340] flex items-center justify-center">
+                  B2
                 </div>
-                <span className="text-base font-bold tracking-tight">BitsB2B Marketplace</span>
+                <span className="font-serif font-semibold text-[19px] text-[#F4EFE3]">
+                  Bits<em className="not-italic text-[#C08829]">B2B</em>.et
+                </span>
               </div>
-              <p className="text-[#A8A196] leading-relaxed">
-                Empowering wholesale commerce, manufacturing supply chains, and industrial procurement across Ethiopia &amp; East Africa.
+              <p className="text-[13px] leading-relaxed max-w-[38ch] text-[#A7AECB] mb-3">
+                Empowering wholesale commerce, manufacturing supply chains, and industrial procurement across Ethiopia and East Africa.
               </p>
-              <div className="text-[11px] text-[#A8A196] pt-1">
-                Addis Ababa Metro &bull; Mojo Dry Port &bull; Hawassa IP
+              <div className="text-[12px] text-[#A7AECB]/80 font-mono">
+                Addis Ababa Metro &mdash; Mojo Dry Port &mdash; Hawassa Industrial Park
               </div>
             </div>
 
-            {/* Col 2 */}
-            <div className="space-y-2">
-              <h4 className="font-bold text-sm text-[#F7F4EE]">Wholesale Categories</h4>
-              <ul className="space-y-1.5 text-[#A8A196]">
-                {categories.slice(0, 5).map(c => (
+            {/* Col 2: Categories */}
+            <div>
+              <h5 className="text-[#F4EFE3] text-[13.5px] font-semibold mb-3.5">Wholesale categories</h5>
+              <ul className="space-y-2 text-[13px] list-none p-0 m-0">
+                {categories.slice(0, 4).map(c => (
                   <li key={c.id}>
                     <button
                       type="button"
@@ -334,7 +348,7 @@ const MarketplaceContent: React.FC = () => {
                         setSelectedCategory(c.id);
                         setViewingView('catalog');
                       }}
-                      className="hover:text-[#E27D56] transition-colors cursor-pointer"
+                      className="hover:text-[#F4EFE3] transition-colors cursor-pointer text-left"
                     >
                       {c.name}
                     </button>
@@ -343,33 +357,21 @@ const MarketplaceContent: React.FC = () => {
               </ul>
             </div>
 
-            {/* Col 3 */}
-            <div className="space-y-2">
-              <h4 className="font-bold text-sm text-[#F7F4EE]">B2B Trade Security</h4>
-              <ul className="space-y-1.5 text-[#A8A196]">
-                <li className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#D97706]" />
-                  <span>Telebirr Escrow Protection</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#D97706]" />
-                  <span>CBE Birr Corporate Escrow</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#C85A32]" />
-                  <span>TIN &amp; Trade License Verification</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <Truck className="w-3.5 h-3.5 text-[#C85A32]" />
-                  <span>Nationwide Pallet Freight Logistics</span>
-                </li>
+            {/* Col 3: Trade Security */}
+            <div>
+              <h5 className="text-[#F4EFE3] text-[13.5px] font-semibold mb-3.5">Trade security</h5>
+              <ul className="space-y-2 text-[13px] list-none p-0 m-0">
+                <li>Telebirr escrow protection</li>
+                <li>CBE Birr corporate escrow</li>
+                <li>TIN &amp; trade license verification</li>
+                <li>Nationwide pallet freight</li>
               </ul>
             </div>
 
-            {/* Col 4 */}
-            <div className="space-y-2">
-              <h4 className="font-bold text-sm text-[#F7F4EE]">Supplier Hub</h4>
-              <p className="text-[#A8A196]">
+            {/* Col 4: Supplier Hub */}
+            <div>
+              <h5 className="text-[#F4EFE3] text-[13.5px] font-semibold mb-3.5">Supplier hub</h5>
+              <p className="text-[13px] leading-relaxed mb-3">
                 Are you a licensed manufacturer, importer, or bulk distributor in Ethiopia?
               </p>
               <button
@@ -381,22 +383,20 @@ const MarketplaceContent: React.FC = () => {
                     setAuthModalOpen(true);
                   }
                 }}
-                className="px-4 py-2 bg-[#1D383D] hover:bg-[#2D545C] text-white border border-[#34626B] rounded-xl font-semibold transition-colors cursor-pointer"
+                className="text-[#C08829] font-bold text-[13px] hover:underline cursor-pointer inline-block"
               >
-                {currentUser?.isSeller ? 'Open Seller Dashboard &rarr;' : 'Register as Supplier &rarr;'}
+                Register as supplier
               </button>
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-[#274B52] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#A8A196]">
-            <div>
-              &copy; {new Date().getFullYear()} BitsB2B Marketplace. All rights reserved.
-            </div>
-            <div className="flex items-center gap-4">
+          <div className="border-t border-[#F4EFE3]/10 mt-9 pt-[20px] flex flex-wrap items-center justify-between text-[12.5px] gap-2">
+            <div>&copy; 2026 BM B2B Marketplace. All rights reserved.</div>
+            <div className="flex items-center gap-4 text-[#A7AECB]">
               <span>Trade Terms</span>
-              <span>&bull;</span>
+              <span>&mdash;</span>
               <span>Escrow Protection Policy</span>
-              <span>&bull;</span>
+              <span>&mdash;</span>
               <span>Logistics Standards</span>
             </div>
           </div>
@@ -406,8 +406,18 @@ const MarketplaceContent: React.FC = () => {
   );
 };
 
-const MainApp: React.FC = () => {
-  const { currentUser, authView } = useMarketplace();
+export interface AppProps {
+  defaultView?: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries';
+  defaultAuthView?: 'login' | 'signup' | 'marketplace';
+}
+
+const MainApp: React.FC<{ defaultView?: any; defaultAuthView?: any }> = ({ defaultView, defaultAuthView }) => {
+  const { currentUser, authView, setViewingView, setAuthView } = useMarketplace();
+
+  React.useEffect(() => {
+    if (defaultView) setViewingView(defaultView);
+    if (defaultAuthView) setAuthView(defaultAuthView);
+  }, [defaultView, defaultAuthView, setViewingView, setAuthView]);
 
   if (!currentUser && authView === 'signup') {
     return <SignUpPage />;
@@ -420,10 +430,10 @@ const MainApp: React.FC = () => {
   return <MarketplaceContent />;
 };
 
-export function App() {
+export function App({ defaultView, defaultAuthView }: AppProps = {}) {
   return (
     <MarketplaceProvider>
-      <MainApp />
+      <MainApp defaultView={defaultView} defaultAuthView={defaultAuthView} />
     </MarketplaceProvider>
   );
 }

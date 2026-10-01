@@ -148,7 +148,7 @@ export const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] text-[#162C30] flex flex-col font-sans selection:bg-[#C85A32]/20 selection:text-[#112225]">
+    <div className="min-h-screen bg-[#FBF9F5] text-[#162C30] flex flex-col font-sans selection:bg-[#C08829]/20 selection:text-[#112225]">
       {/* 1. Header with Top Language Switcher */}
       <AuthHeader />
 
@@ -158,27 +158,27 @@ export const SignUpPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          className="w-full max-w-2xl bg-[#FFFFFF] rounded-2xl border border-[#E5DFD5] shadow-2xl overflow-hidden"
+          className="w-full max-w-2xl bg-white rounded-[18px] border border-[#E2E4EA] shadow-xl overflow-hidden"
         >
-          {/* Card Header Banner */}
-          <div className="bg-[#112225] text-[#F7F4EE] p-6 border-b border-[#274B52] relative overflow-hidden">
+          {/* Card Header Banner (Ledger Navy Theme matching catalog header & footer) */}
+          <div className="bg-[#1B2340] text-[#F4EFE3] p-6 border-b border-[#2B3558] relative overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h1 className="text-xl font-black tracking-tight text-[#F7F4EE] flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-[#E27D56]" />
+                <h1 className="font-serif font-bold text-xl tracking-tight text-[#F4EFE3] flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-[#C08829]" />
                   {t('auth.signUpTitle')}
                 </h1>
-                <p className="text-xs text-[#A8A196] mt-1">
+                <p className="text-xs text-[#A7AECB] mt-1">
                   {t('auth.signUpSubtitle')}
                 </p>
               </div>
 
-              <div className="flex items-center gap-1.5 bg-[#0B1718] p-1 rounded-xl border border-[#274B52] self-start sm:self-auto">
+              <div className="flex items-center gap-1.5 bg-[#131A30] p-1 rounded-xl border border-[#2B3558] self-start sm:self-auto">
                 <button
                   type="button"
                   onClick={() => setActiveStep(1)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                    activeStep === 1 ? 'bg-[#C85A32] text-white' : 'text-[#A8A196]'
+                    activeStep === 1 ? 'bg-[#C08829] text-[#1B2340]' : 'text-[#A7AECB]'
                   }`}
                 >
                   {t('auth.step1Title')}
@@ -187,7 +187,7 @@ export const SignUpPage: React.FC = () => {
                   type="button"
                   onClick={() => setActiveStep(2)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                    activeStep === 2 ? 'bg-[#C85A32] text-white' : 'text-[#A8A196]'
+                    activeStep === 2 ? 'bg-[#C08829] text-[#1B2340]' : 'text-[#A7AECB]'
                   }`}
                 >
                   {t('auth.step2Title')}
@@ -196,7 +196,7 @@ export const SignUpPage: React.FC = () => {
                   type="button"
                   onClick={() => setActiveStep(3)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                    activeStep === 3 ? 'bg-[#C85A32] text-white' : 'text-[#A8A196]'
+                    activeStep === 3 ? 'bg-[#C08829] text-[#1B2340]' : 'text-[#A7AECB]'
                   }`}
                 >
                   {t('auth.step3Title')}
@@ -222,16 +222,16 @@ export const SignUpPage: React.FC = () => {
             {/* Step 1: Personal Identity */}
             {activeStep === 1 && (
               <form onSubmit={handleNextStep} className="space-y-4">
-                <div className="border-b border-[#F0EBE1] pb-3 mb-2">
-                  <h3 className="text-sm font-black text-[#112225] flex items-center gap-2">
-                    <User className="w-4 h-4 text-[#C85A32]" />
+                <div className="border-b border-[#E2E4EA] pb-3 mb-2">
+                  <h3 className="font-serif text-sm font-bold text-[#1E2128] flex items-center gap-2">
+                    <User className="w-4 h-4 text-[#C08829]" />
                     {t('auth.step1Title')}
                   </h3>
-                  <p className="text-xs text-[#6E685F]">Enter legal representative details</p>
+                  <p className="text-xs text-[#6B7078]">Enter legal representative details</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                     {t('auth.fullNameLabel')} *
                   </label>
                   <input
@@ -241,13 +241,13 @@ export const SignUpPage: React.FC = () => {
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
                     placeholder={t('auth.fullNamePlaceholder')}
-                    className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                    className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.phoneLabel')} *
                     </label>
                     <input
@@ -257,12 +257,12 @@ export const SignUpPage: React.FC = () => {
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
                       placeholder={t('auth.phonePlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.emailLabel')}
                     </label>
                     <input
@@ -271,14 +271,14 @@ export const SignUpPage: React.FC = () => {
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       placeholder={t('auth.emailPlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.passwordLabel')} *
                     </label>
                     <input
@@ -288,12 +288,12 @@ export const SignUpPage: React.FC = () => {
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       placeholder={t('auth.passwordPlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.confirmPasswordLabel')} *
                     </label>
                     <input
@@ -303,17 +303,17 @@ export const SignUpPage: React.FC = () => {
                       value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)}
                       placeholder={t('auth.confirmPasswordPlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full mt-4 py-3 px-4 bg-[#112225] hover:bg-[#1A3337] text-[#F7F4EE] font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full mt-4 py-3.5 px-4 bg-[#1B2340] hover:bg-[#2A3760] text-[#F4EFE3] font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md"
                 >
                   <span>Continue to Business Info</span>
-                  <ArrowRight className="w-4 h-4 text-[#E27D56]" />
+                  <ArrowRight className="w-4 h-4 text-[#C08829]" />
                 </button>
               </form>
             )}
@@ -321,16 +321,16 @@ export const SignUpPage: React.FC = () => {
             {/* Step 2: Business Info */}
             {activeStep === 2 && (
               <form onSubmit={handleNextStep} className="space-y-4">
-                <div className="border-b border-[#F0EBE1] pb-3 mb-2">
-                  <h3 className="text-sm font-black text-[#112225] flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-[#C85A32]" />
+                <div className="border-b border-[#E2E4EA] pb-3 mb-2">
+                  <h3 className="font-serif text-sm font-bold text-[#1E2128] flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-[#C08829]" />
                     {t('auth.step2Title')}
                   </h3>
-                  <p className="text-xs text-[#6E685F]">Enter legal company &amp; commercial trade details</p>
+                  <p className="text-xs text-[#6B7078]">Enter legal company &amp; commercial trade details</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                     {t('auth.businessNameLabel')} *
                   </label>
                   <input
@@ -340,19 +340,19 @@ export const SignUpPage: React.FC = () => {
                     value={businessName}
                     onChange={e => setBusinessName(e.target.value)}
                     placeholder={t('auth.businessNamePlaceholder')}
-                    className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                    className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                     {t('auth.businessTypeLabel')} *
                   </label>
                   <select
                     id="select-signup-businesstype"
                     value={businessTypeCode}
                     onChange={e => setBusinessTypeCode(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                    className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                   >
                     {TRADE_TYPES.map(t => (
                       <option key={t.code} value={t.code}>
@@ -364,7 +364,7 @@ export const SignUpPage: React.FC = () => {
 
                 {/* Capabilities check */}
                 <div>
-                  <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-2">
                     {t('auth.businessCapabilitiesLabel')}
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -373,9 +373,9 @@ export const SignUpPage: React.FC = () => {
                         type="checkbox"
                         checked={canBuy}
                         onChange={e => setCanBuy(e.target.checked)}
-                        className="w-4 h-4 accent-[#C85A32]"
+                        className="w-4 h-4 accent-[#33553A]"
                       />
-                      <span className="text-xs font-bold text-[#112225]">
+                      <span className="text-xs font-bold text-[#1E2128]">
                         {t('auth.canBuyLabel')}
                       </span>
                     </label>
@@ -385,9 +385,9 @@ export const SignUpPage: React.FC = () => {
                         type="checkbox"
                         checked={canSell}
                         onChange={e => setCanSell(e.target.checked)}
-                        className="w-4 h-4 accent-[#C85A32]"
+                        className="w-4 h-4 accent-[#33553A]"
                       />
-                      <span className="text-xs font-bold text-[#112225]">
+                      <span className="text-xs font-bold text-[#1E2128]">
                         {t('auth.canSellLabel')}
                       </span>
                     </label>
@@ -397,7 +397,7 @@ export const SignUpPage: React.FC = () => {
                 {/* TIN and Trade License */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.tinLabel')}
                     </label>
                     <input
@@ -406,12 +406,12 @@ export const SignUpPage: React.FC = () => {
                       value={tinNumber}
                       onChange={e => setTinNumber(e.target.value)}
                       placeholder={t('auth.tinPlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.tradeLicenseLabel')}
                     </label>
                     <input
@@ -420,7 +420,7 @@ export const SignUpPage: React.FC = () => {
                       value={tradeLicenseNumber}
                       onChange={e => setTradeLicenseNumber(e.target.value)}
                       placeholder={t('auth.tradeLicensePlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
                 </div>
@@ -429,16 +429,16 @@ export const SignUpPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveStep(1)}
-                    className="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-xs rounded-xl"
+                    className="px-4 py-2.5 bg-[#E2E4EA] hover:bg-[#D4D7E1] text-[#1E2128] font-bold text-xs rounded-xl"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-3 px-4 bg-[#112225] hover:bg-[#1A3337] text-[#F7F4EE] font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+                    className="flex-1 py-3 px-4 bg-[#1B2340] hover:bg-[#2A3760] text-[#F4EFE3] font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md"
                   >
                     <span>Continue to Address</span>
-                    <ArrowRight className="w-4 h-4 text-[#E27D56]" />
+                    <ArrowRight className="w-4 h-4 text-[#C08829]" />
                   </button>
                 </div>
               </form>
@@ -447,24 +447,24 @@ export const SignUpPage: React.FC = () => {
             {/* Step 3: Location & Address */}
             {activeStep === 3 && (
               <form onSubmit={handleFinalSubmit} className="space-y-4">
-                <div className="border-b border-[#F0EBE1] pb-3 mb-2">
-                  <h3 className="text-sm font-black text-[#112225] flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-[#C85A32]" />
+                <div className="border-b border-[#E2E4EA] pb-3 mb-2">
+                  <h3 className="font-serif text-sm font-bold text-[#1E2128] flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-[#C08829]" />
                     {t('auth.step3Title')}
                   </h3>
-                  <p className="text-xs text-[#6E685F]">Enter headquarters address &amp; delivery location</p>
+                  <p className="text-xs text-[#6B7078]">Enter headquarters address &amp; delivery location</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.regionLabel')} *
                     </label>
                     <select
                       id="select-signup-region"
                       value={region}
                       onChange={e => setRegion(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     >
                       {ETHIOPIAN_REGIONS.map(r => (
                         <option key={r} value={r}>
@@ -475,7 +475,7 @@ export const SignUpPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.cityLabel')} *
                     </label>
                     <input
@@ -485,14 +485,14 @@ export const SignUpPage: React.FC = () => {
                       value={city}
                       onChange={e => setCity(e.target.value)}
                       placeholder={t('auth.cityPlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.subcityLabel')}
                     </label>
                     <input
@@ -501,12 +501,12 @@ export const SignUpPage: React.FC = () => {
                       value={subcity}
                       onChange={e => setSubcity(e.target.value)}
                       placeholder={t('auth.subcityPlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.kebeleLabel')}
                     </label>
                     <input
@@ -515,13 +515,13 @@ export const SignUpPage: React.FC = () => {
                       value={kebele}
                       onChange={e => setKebele(e.target.value)}
                       placeholder={t('auth.kebelePlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#112225] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                     {t('auth.landmarkLabel')}
                   </label>
                   <input
@@ -530,7 +530,7 @@ export const SignUpPage: React.FC = () => {
                     value={landmark}
                     onChange={e => setLandmark(e.target.value)}
                     placeholder={t('auth.landmarkPlaceholder')}
-                    className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#112225] focus:outline-none focus:border-[#C85A32]"
+                    className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
                   />
                 </div>
 
@@ -538,7 +538,7 @@ export const SignUpPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveStep(2)}
-                    className="px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-xs rounded-xl"
+                    className="px-4 py-3 bg-[#E2E4EA] hover:bg-[#D4D7E1] text-[#1E2128] font-bold text-xs rounded-xl"
                   >
                     Back
                   </button>
@@ -546,16 +546,16 @@ export const SignUpPage: React.FC = () => {
                     id="btn-submit-signup"
                     type="submit"
                     disabled={loading}
-                    className="flex-1 py-3.5 px-4 bg-gradient-to-r from-[#C85A32] to-[#E27D56] hover:from-[#B54E28] hover:to-[#D46E47] text-white font-bold text-sm rounded-xl shadow-lg shadow-[#C85A32]/30 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+                    className="flex-1 py-3.5 px-4 bg-[#1B2340] hover:bg-[#2A3760] text-[#F4EFE3] font-bold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
                   >
                     {loading ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin text-[#C08829]" />
                         <span>Saving to PostgreSQL Database...</span>
                       </>
                     ) : (
                       <>
-                        <CheckCircle2 className="w-4 h-4" />
+                        <CheckCircle2 className="w-4 h-4 text-[#C08829]" />
                         <span>Create Business Account</span>
                       </>
                     )}
@@ -566,17 +566,17 @@ export const SignUpPage: React.FC = () => {
           </div>
 
           {/* Bottom Sign In Link Box */}
-          <div className="bg-[#F7F4EE] p-4 text-center border-t border-[#E5DFD5]">
-            <p className="text-xs text-[#6E685F] mb-2 font-medium">
+          <div className="bg-[#F1F2F5] p-4 text-center border-t border-[#E2E4EA]">
+            <p className="text-xs text-[#6B7078] mb-2 font-medium">
               {t('auth.alreadyHaveAccount')}
             </p>
             <button
               id="btn-goto-login"
               type="button"
               onClick={() => setAuthView('login')}
-              className="w-full py-2.5 px-4 bg-[#112225] hover:bg-[#1A3337] text-[#F7F4EE] font-bold text-xs rounded-xl border border-[#274B52] transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 bg-[#C08829] hover:bg-[#A97520] text-[#1B2340] font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
             >
-              <LogIn className="w-4 h-4 text-[#E27D56]" />
+              <LogIn className="w-4 h-4" />
               <span>{t('auth.signInNow')}</span>
             </button>
           </div>

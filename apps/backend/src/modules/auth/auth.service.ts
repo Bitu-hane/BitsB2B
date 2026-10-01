@@ -219,6 +219,8 @@ export class AuthService {
         phone: user.phone,
         fullName: user.full_name,
         email: user.email,
+        staffRole: user.staff_role,
+        staff_role: user.staff_role,
       },
     };
   }
@@ -399,7 +401,7 @@ export class AuthService {
   async getUserProfile(userId: string) {
     const users = await this.dataSource.query(
       `SELECT id, full_name AS "fullName", phone, email, avatar_url AS "avatarUrl", 
-              is_active AS "isActive", phone_verified_at AS "phoneVerifiedAt", created_at AS "createdAt"
+              is_active AS "isActive", staff_role AS "staffRole", staff_role AS "staff_role", phone_verified_at AS "phoneVerifiedAt", created_at AS "createdAt"
        FROM users WHERE id = $1`,
       [userId],
     );

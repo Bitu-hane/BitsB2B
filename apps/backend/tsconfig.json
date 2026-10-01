@@ -19,7 +19,9 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@common/*": ["src/common/*"],
-      "@modules/*": ["src/modules/*"]
+      "@modules/*": ["src/modules/*"],
+      "@bitsb2b/shared": ["../../packages/shared/src/index.ts"],
+      "@bmb2b/shared": ["../../packages/shared/src/index.ts"]
     }
   }
 }

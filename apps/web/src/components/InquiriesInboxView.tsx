@@ -12,23 +12,20 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { StructuredInquiry } from '../types';
+import { CanvasProductImage } from './CanvasProductImage';
 
 export const InquiriesInboxView: React.FC = () => {
   const {
     inquiries,
     currentUser,
     replyToInquiry,
-    setSelectedProduct,
-    products,
     setViewingView,
   } = useMarketplace();
 
-  const [selectedInquiryId, setSelectedInquiryId] = useState<string | null>(
-    inquiries[0]?.id || null
-  );
+  const [selectedInquiryId, setSelectedInquiryId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
 
-  // Inquiries for this user (as buyer or seller)
+  // Inquiries for this user
   const userInquiries = inquiries.filter(inq => {
     if (currentUser?.isSeller) {
       return (
@@ -39,7 +36,7 @@ export const InquiriesInboxView: React.FC = () => {
     return inq.buyerId === currentUser?.id || !currentUser;
   });
 
-  const activeInquiry = userInquiries.find(i => i.id === selectedInquiryId) || userInquiries[0];
+  const activeInquiry = userInquiries.find(i => i.id === selectedInquiryId);
 
   const handleSendReply = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,63 +46,54 @@ export const InquiriesInboxView: React.FC = () => {
     setReplyText('');
   };
 
-  return (
-    <div id="inquiries-inbox-view" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* Header Banner */}
-      <div className="bg-[#112225] text-[#F7F4EE] rounded-2xl p-6 border border-[#274B52] flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="p-2 rounded-lg bg-[#C85A32] text-white">
-              <MessageSquare className="w-5 h-5" />
-            </span>
-            <h1 className="text-xl font-bold tracking-tight">
-              Structured Product Inquiries &amp; RFQ Threads
-            </h1>
-          </div>
-          <p className="text-xs text-[#A8A196] mt-1 max-w-xl">
-            Direct product-anchored communication channel. Ask questions tied to specific catalog items,
-            receive verified seller answers, quotations, and technical spec sheets.
-          </p>
-        </div>
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
 
-        <button
-          onClick={() => setViewingView('catalog')}
-          className="px-4 py-2 bg-[#1D383D] hover:bg-[#23454B] text-xs font-semibold text-[#F7F4EE] rounded-xl border border-[#34626B] transition-colors cursor-pointer self-start md:self-auto"
-        >
-          Browse Wholesale Catalog &rarr;
-        </button>
+  return (
+    <div id="inquiries-inbox-view" className="max-w-[1240px] mx-auto px-4 sm:px-8 py-8 space-y-6">
+      {/* 1. Header Section */}
+      <div>
+        <h2 className="font-serif text-[27px] font-semibold text-[#1E2128] mb-1.5">
+          Structured inquiries &amp; RFQ threads
+        </h2>
+        <p className="text-[#6B7078] text-[14px]">
+          Ask technical or bulk-quotation questions tied directly to a catalog item.
+        </p>
       </div>
 
       {userInquiries.length === 0 ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-[#E5DFD5] space-y-3">
-          <div className="w-12 h-12 rounded-full bg-[#FAF7F2] flex items-center justify-center text-[#888] mx-auto">
+        <div className="bg-white border border-dashed border-[#E2E4EA] rounded-[18px] p-12 text-center">
+          <div className="w-[54px] h-[54px] rounded-full bg-[#F2DFAE] text-[#9C6B1A] flex items-center justify-center mx-auto mb-4">
             <MessageSquare className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-bold text-[#112225]">No Inquiries Yet</h3>
-          <p className="text-xs text-[#6E685F] max-w-sm mx-auto">
-            Browse our B2B catalog and tap <strong>"Inquire / RFQ"</strong> on any product to ask technical or bulk quotation questions directly to the manufacturer.
+          <h4 className="font-serif text-[18px] font-semibold text-[#1E2128] mb-2">No inquiries yet</h4>
+          <p className="text-[#6B7078] text-[13.5px] max-w-[44ch] mx-auto mb-6 leading-relaxed">
+            Browse our catalog and click "Inquire / RFQ" on any item to start a quotation thread with verified suppliers.
           </p>
           <button
             onClick={() => setViewingView('catalog')}
-            className="px-4 py-2 bg-[#C85A32] hover:bg-[#A34320] text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+            className="bg-[#1B2340] text-[#F4EFE3] hover:bg-[#223B28] px-6 py-3 rounded-[8px] text-[13.5px] font-semibold transition-colors cursor-pointer"
           >
-            Explore Wholesale Products
+            Explore Catalog
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Threads List Sidebar */}
-          <div className="lg:col-span-4 bg-white rounded-2xl border border-[#E5DFD5] shadow-xs overflow-hidden divide-y divide-[#EFEAE0]">
-            <div className="p-3.5 bg-[#FAF7F2] border-b border-[#E5DFD5] text-xs font-bold text-[#112225] flex justify-between items-center">
-              <span>All Inquiry Threads</span>
-              <span className="text-[11px] text-[#6E685F] bg-[#EBE5DA] px-2 py-0.5 rounded-full font-normal">
-                {userInquiries.length} Active
-              </span>
+        /* 2. Main Inbox Container (Screenshot 1 Layout) */
+        <div className="bg-white border border-[#E2E4EA] rounded-[18px] overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[480px]">
+          {/* Left Column: Inquiries List */}
+          <div className="md:col-span-4 border-r border-[#E2E4EA] flex flex-col">
+            <div className="p-4 border-b border-[#E2E4EA] font-serif font-semibold text-[16px] text-[#1E2128]">
+              Inquiries ({userInquiries.length})
             </div>
 
-            <div className="max-h-[600px] overflow-y-auto divide-y divide-[#EFEAE0]">
+            <div className="flex-1 divide-y divide-[#ECEDF1] overflow-y-auto">
               {userInquiries.map(inq => {
-                const isSelected = activeInquiry?.id === inq.id;
+                const isSelected = selectedInquiryId === inq.id;
+                const displayName = currentUser?.isSeller ? inq.buyerBusinessName : inq.sellerBusinessName;
+                const initials = getInitials(displayName);
                 const lastMsg = inq.messages[inq.messages.length - 1];
 
                 return (
@@ -113,38 +101,24 @@ export const InquiriesInboxView: React.FC = () => {
                     key={inq.id}
                     id={`inquiry-item-${inq.id}`}
                     onClick={() => setSelectedInquiryId(inq.id)}
-                    className={`w-full p-4 text-left transition-colors cursor-pointer flex gap-3 ${
-                      isSelected ? 'bg-[#FAF7F2] border-l-4 border-[#C85A32]' : 'hover:bg-[#FDFBF7]'
+                    className={`w-full p-4 text-left transition-colors cursor-pointer flex gap-3 items-center ${
+                      isSelected ? 'bg-[#F2DFAE]/30 border-l-4 border-[#C08829]' : 'hover:bg-[#F1F2F5]'
                     }`}
                   >
-                    <img
+                    <CanvasProductImage
                       src={inq.productImage}
                       alt={inq.productName}
-                      className="w-12 h-12 rounded-lg object-cover border border-[#D8CFBF] bg-[#F7F4EE] shrink-0"
+                      className="w-full h-full object-contain"
+                      containerClassName="w-10 h-10 rounded-lg bg-[#FAF7F2] border border-[#E2E4EA] overflow-hidden shrink-0"
                     />
+
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="text-xs font-bold text-[#112225] truncate">
-                          {inq.productName}
-                        </span>
-                        <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase shrink-0 ${
-                            inq.status === 'answered'
-                              ? 'bg-[#FEF3C7] text-[#92400E]'
-                              : 'bg-[#E5DFD5] text-[#6E685F]'
-                          }`}
-                        >
-                          {inq.status === 'answered' ? 'Replied' : 'Pending'}
-                        </span>
+                      <div className="font-bold text-[13.5px] text-[#1E2128] truncate mb-0.5">
+                        {displayName}
                       </div>
-
-                      <div className="text-[11px] text-[#6E685F] mt-0.5 truncate">
-                        {currentUser?.isSeller ? `Buyer: ${inq.buyerBusinessName}` : `Seller: ${inq.sellerBusinessName}`}
+                      <div className="text-[12px] text-[#6B7078] line-clamp-2">
+                        RE: {inq.productName} {lastMsg ? `— ${lastMsg.text}` : ''}
                       </div>
-
-                      <p className="text-[11px] text-[#888] line-clamp-1 mt-1">
-                        {lastMsg ? lastMsg.text : 'New structured inquiry'}
-                      </p>
                     </div>
                   </button>
                 );
@@ -152,92 +126,90 @@ export const InquiriesInboxView: React.FC = () => {
             </div>
           </div>
 
-          {/* Active Thread Conversation Pane */}
-          {activeInquiry && (
-            <div className="lg:col-span-8 bg-white rounded-2xl border border-[#E5DFD5] shadow-xs overflow-hidden flex flex-col min-h-[500px]">
-              {/* Thread Header */}
-              <div className="p-4 bg-[#FAF7F2] border-b border-[#E5DFD5] flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={activeInquiry.productImage}
-                    alt={activeInquiry.productName}
-                    className="w-12 h-12 rounded-lg object-cover border border-[#D8CFBF]"
+          {/* Right Column: Thread Detail or Empty State */}
+          <div className="md:col-span-8 bg-[#F1F2F5] p-6 flex flex-col justify-center items-center">
+            {activeInquiry ? (
+              <div className="w-full bg-white border border-[#E2E4EA] rounded-[11px] p-6 shadow-xs flex flex-col h-full">
+                {/* Thread Header */}
+                <div className="pb-4 border-b border-[#E2E4EA] flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <CanvasProductImage
+                      src={activeInquiry.productImage}
+                      alt={activeInquiry.productName}
+                      className="w-full h-full object-contain"
+                      containerClassName="w-12 h-12 rounded-lg bg-[#FAF7F2] border border-[#E2E4EA] overflow-hidden shrink-0"
+                    />
+                    <div>
+                      <h3 className="font-serif font-semibold text-[17px] text-[#1E2128]">
+                        RE: {activeInquiry.productName}
+                      </h3>
+                      <div className="text-xs text-[#6B7078] mt-0.5">
+                        With: <strong className="text-[#1E2128]">{currentUser?.isSeller ? activeInquiry.buyerBusinessName : activeInquiry.sellerBusinessName}</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="bg-[#DCE7DC] text-[#223B28] text-xs font-bold px-3 py-1 rounded-full shrink-0">
+                    {activeInquiry.status.toUpperCase()}
+                  </span>
+                </div>
+
+                {/* Messages Stream */}
+                <div className="flex-1 py-4 space-y-3 overflow-y-auto max-h-[300px]">
+                  {activeInquiry.messages.map((msg, idx) => {
+                    const isMe = msg.senderId === currentUser?.id || (msg.isSeller && currentUser?.isSeller);
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
+                      >
+                        <div
+                          className={`max-w-[80%] p-3 rounded-[11px] text-xs leading-relaxed ${
+                            isMe
+                              ? 'bg-[#1B2340] text-white rounded-br-none'
+                              : 'bg-[#F1F2F5] text-[#1E2128] border border-[#E2E4EA] rounded-bl-none'
+                          }`}
+                        >
+                          <div className="font-semibold text-[10.5px] opacity-75 mb-1">
+                            {msg.senderName} ({msg.timestamp})
+                          </div>
+                          <div>{msg.text}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Reply Form */}
+                <form onSubmit={handleSendReply} className="pt-3 border-t border-[#E2E4EA] flex gap-2">
+                  <input
+                    type="text"
+                    value={replyText}
+                    onChange={e => setReplyText(e.target.value)}
+                    placeholder="Type your quotation or technical question reply..."
+                    className="flex-1 bg-[#F1F2F5] border border-[#E2E4EA] rounded-[7px] px-3.5 py-2 text-xs text-[#1E2128] focus:outline-none"
                   />
-                  <div>
-                    <h2 className="text-sm font-bold text-[#112225]">
-                      {activeInquiry.productName}
-                    </h2>
-                    <div className="text-xs text-[#6E685F] flex items-center gap-2 mt-0.5">
-                      <span>Supplier: <strong>{activeInquiry.sellerBusinessName}</strong></span>
-                      <span>&bull;</span>
-                      <span>Topic: <strong className="capitalize">{activeInquiry.topic.replace('_', ' ')}</strong></span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
                   <button
-                    onClick={() => {
-                      const prod = products.find(p => p.id === activeInquiry.productId);
-                      if (prod) setSelectedProduct(prod);
-                    }}
-                    className="px-3 py-1.5 bg-white border border-[#D8CFBF] hover:bg-[#F3EFE6] text-xs font-semibold text-[#112225] rounded-lg transition-colors cursor-pointer"
+                    type="submit"
+                    className="bg-[#C08829] hover:bg-[#9C6B1A] text-[#1B2340] hover:text-white px-4 py-2 rounded-[7px] text-xs font-bold transition-colors cursor-pointer"
                   >
-                    View Product Details
+                    Send Reply
                   </button>
+                </form>
+              </div>
+            ) : (
+              /* Empty State (Exact Screenshot 1) */
+              <div className="text-center p-8 max-w-sm">
+                <div className="w-[54px] h-[54px] rounded-full bg-[#F2DFAE] text-[#9C6B1A] flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="w-6 h-6" />
                 </div>
+                <h4 className="font-serif text-[18px] font-semibold text-[#1E2128] mb-2">Select a thread</h4>
+                <p className="text-[#6B7078] text-[13.5px] leading-relaxed">
+                  Choose an inquiry on the left to see the full quotation and spec exchange.
+                </p>
               </div>
-
-              {/* Messages Timeline */}
-              <div className="p-6 space-y-4 flex-1 overflow-y-auto max-h-[400px]">
-                {activeInquiry.messages.map(msg => (
-                  <div
-                    key={msg.id}
-                    className={`p-4 rounded-xl text-xs space-y-1.5 max-w-[85%] ${
-                      msg.isSeller
-                        ? 'bg-[#FAF7F2] border border-[#C85A32]/30 ml-auto'
-                        : 'bg-white border border-[#E5DFD5] mr-auto'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-4 text-[11px]">
-                      <span className="font-bold text-[#112225] flex items-center gap-1">
-                        <Building2 className="w-3.5 h-3.5 text-[#C85A32]" />
-                        {msg.senderBusiness} ({msg.isSeller ? 'Seller' : 'Buyer'})
-                      </span>
-                      <span className="text-[#888]">{msg.timestamp}</span>
-                    </div>
-                    <p className="text-[#162C30] leading-relaxed whitespace-pre-wrap">
-                      {msg.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Reply Input Bar */}
-              <form onSubmit={handleSendReply} className="p-4 bg-[#FAF7F2] border-t border-[#E5DFD5] flex gap-2">
-                <input
-                  type="text"
-                  required
-                  value={replyText}
-                  onChange={e => setReplyText(e.target.value)}
-                  placeholder={
-                    currentUser?.isSeller
-                      ? 'Type official seller response or price quote...'
-                      : 'Type follow-up question or specification requirement...'
-                  }
-                  className="flex-1 px-4 py-2.5 bg-white border border-[#D8CFBF] rounded-xl text-xs text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                />
-                <button
-                  type="submit"
-                  id="btn-send-inbox-inquiry-reply"
-                  className="px-5 py-2.5 bg-[#C85A32] hover:bg-[#A34320] text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 shadow-sm"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send</span>
-                </button>
-              </form>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
     </div>

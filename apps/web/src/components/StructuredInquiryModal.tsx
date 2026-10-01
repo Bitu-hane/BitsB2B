@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { CanvasProductImage } from './CanvasProductImage';
 
 export const StructuredInquiryModal: React.FC = () => {
   const {
@@ -132,10 +133,11 @@ export const StructuredInquiryModal: React.FC = () => {
 
           {/* Product Summary Header Card */}
           <div className="p-4 bg-[#FAF7F2] border-b border-[#E5DFD5] flex items-center gap-3.5 shrink-0">
-            <img
+            <CanvasProductImage
               src={inquiryTargetProduct.images[0]}
               alt={inquiryTargetProduct.name}
-              className="w-14 h-14 rounded-lg object-cover border border-[#D8CFBF] bg-white shrink-0"
+              className="w-full h-full object-contain"
+              containerClassName="w-14 h-14 rounded-lg bg-white border border-[#D8CFBF] overflow-hidden shrink-0"
             />
             <div className="flex-1 min-w-0">
               <div className="text-xs font-bold text-[#112225] truncate">

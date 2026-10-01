@@ -3,6 +3,7 @@ import React from 'react';
 import { Product } from '../types';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { ShieldCheck, MessageSquare, ShoppingCart, MapPin, Clock, Lock, AlertCircle } from 'lucide-react';
+import { CanvasProductImage } from './CanvasProductImage';
 
 interface ProductCardProps {
   product: Product;
@@ -30,30 +31,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
     }
   };
 
-  const handleSellerClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const sellerUser = allUsers.find(u => u.business.id === product.sellerId || u.isSeller);
-    if (sellerUser) {
-      setSelectedSeller(sellerUser.business);
-    } else {
-      setSelectedSeller({
-        id: product.sellerId,
-        name: product.sellerBusinessName,
-        role: 'producer',
-        phone: '+251 91 123 4567',
-        region: product.sellerRegion,
-        city: 'Addis Ababa',
-        verificationStatus: product.sellerVerified ? 'verified' : 'unverified',
-        establishedYear: 2015,
-        averageResponseTime: '< 2 hours',
-        responseRate: '98%',
-        rating: 4.8,
-        totalOrdersCompleted: 150,
-        description: 'Verified B2B wholesale producer and distributor.',
-      });
-    }
-  };
-
   const handleInquire = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!currentUser) {
@@ -74,108 +51,54 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
     setOrderModalOpen(true);
   };
 
-  const getStockBadge = () => {
-    switch (product.stockStatus) {
-      case 'in_stock':
-        return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-[#162C30]/90 text-[#F7F4EE] px-2 py-0.5 rounded backdrop-blur-sm border border-[#34626B]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
-            In Stock ({product.stockQuantity})
-          </span>
-        );
-      case 'low_stock':
-        return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-[#C85A32]/90 text-white px-2 py-0.5 rounded backdrop-blur-sm">
-            <AlertCircle className="w-3 h-3" />
-            Low Stock ({product.stockQuantity})
-          </span>
-        );
-      case 'out_of_stock':
-        return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-[#112225]/90 text-[#A8A196] px-2 py-0.5 rounded backdrop-blur-sm border border-[#34626B]">
-            Out of Stock
-          </span>
-        );
-    }
-  };
-
   return (
     <div
       id={`product-card-${product.id}`}
       onClick={handleCardClick}
-      className="group bg-[#FFFFFF] hover:bg-[#FDFBF7] rounded-xl border border-[#E5DFD5] hover:border-[#C85A32] shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col cursor-pointer"
+      className="group bg-white border border-[#E2E4EA] rounded-[11px] overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col cursor-pointer relative"
     >
-      <div className="relative w-full aspect-[4/3] bg-[#F3EFE9] overflow-hidden">
-        <img
-          src={product.images[0] || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80'}
+      {/* Top Image / Media Area with Auto-Canvas Processing */}
+      <div className="relative h-[150px] bg-[#F1F2F5] flex items-center justify-center border-b border-dashed border-[#E2E4EA] overflow-hidden">
+        <CanvasProductImage
+          src={product.images && product.images[0]}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          loading="lazy"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+          containerClassName="w-full h-full flex items-center justify-center bg-[#FAF7F2] relative overflow-hidden"
         />
 
-        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 items-start">
-          <span className="text-[10px] uppercase font-bold tracking-wider bg-[#112225]/80 text-[#F7F4EE] px-2 py-0.5 rounded backdrop-blur-xs">
-            {product.categoryName}
-          </span>
-        </div>
-
-        <div className="absolute bottom-2.5 left-2.5">
-          {getStockBadge()}
-        </div>
-
-        <div className="absolute bottom-2.5 right-2.5 text-[10px] text-[#EBE5DA] bg-[#112225]/85 backdrop-blur-xs px-2 py-0.5 rounded flex items-center gap-1 border border-[#34626B]">
-          <Clock className="w-2.5 h-2.5 text-[#E27D56]" />
-          <span>{product.leadTime}</span>
-        </div>
+        {/* Verified Badge */}
+        {product.sellerVerified && (
+          <div className="absolute top-2.5 left-2.5 bg-[#33553A] text-white text-[10.5px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-xs">
+            <ShieldCheck className="w-3 h-3 text-emerald-300" />
+            <span>Verified</span>
+          </div>
+        )}
       </div>
 
+      {/* Card Content Body */}
       <div className="p-4 flex-1 flex flex-col justify-between">
         <div>
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <button
-              onClick={handleSellerClick}
-              className="text-left text-xs font-semibold text-[#162C30] hover:text-[#C85A32] truncate flex items-center gap-1 group/seller cursor-pointer"
-              title={product.sellerBusinessName}
-            >
-              <span className="truncate">{product.sellerBusinessName}</span>
-              {product.sellerVerified ? (
-                <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-[#92400E] bg-[#FEF3C7] border border-[#FCD34D] px-1.5 py-0.2 rounded shrink-0">
-                  <ShieldCheck className="w-3 h-3 text-[#D97706]" />
-                  Verified
-                </span>
-              ) : (
-                <span className="text-[10px] text-[#888] bg-[#EFEAE0] px-1.5 py-0.2 rounded shrink-0">
-                  Unverified
-                </span>
-              )}
-            </button>
-          </div>
-
-          <h3 className="text-sm font-semibold text-[#112225] leading-snug line-clamp-2 mb-2 group-hover:text-[#C85A32] transition-colors">
+          <h4 className="text-[14.5px] font-semibold text-[#1E2128] leading-tight mb-1.5 group-hover:text-[#C08829] transition-colors line-clamp-2">
             {product.name}
-          </h3>
+          </h4>
 
-          <div className="flex items-center gap-1 text-[11px] text-[#6E685F] mb-3">
-            <MapPin className="w-3 h-3 text-[#C85A32] shrink-0" />
-            <span className="truncate">{product.sellerRegion}</span>
+          <div className="text-xs text-[#6B7078] mb-3">
+            {product.sellerBusinessName}, MOQ {product.moq} {product.unit}
           </div>
         </div>
 
         <div>
-          <div className="pt-2.5 border-t border-[#EFEAE0] flex items-end justify-between gap-2 mb-3.5">
+          {/* Price */}
+          <div className="flex items-baseline gap-1.5 mb-3">
             {currentUser ? (
-              <div>
-                <div className="text-[11px] text-[#6E685F]">Wholesale Price:</div>
-                <div className="text-base font-bold text-[#C85A32]">
-                  {product.price.toLocaleString()} <span className="text-xs font-medium text-[#112225]">{product.currency}</span>
-                  <span className="text-[11px] font-normal text-[#6E685F]"> / {product.unit}</span>
-                </div>
-                {product.priceTiers && product.priceTiers.length > 1 && (
-                  <div className="text-[10px] text-[#8B3E1E] font-medium">
-                    Volume tier from {product.priceTiers[product.priceTiers.length - 1].pricePerUnit.toLocaleString()} {product.currency}
-                  </div>
-                )}
-              </div>
+              <>
+                <b className="font-mono text-lg font-bold text-[#9C6B1A]">
+                  {product.price.toLocaleString()}
+                </b>
+                <span className="text-xs text-[#6B7078]">
+                  {product.currency} / {product.unit}
+                </span>
+              </>
             ) : (
               <button
                 type="button"
@@ -183,44 +106,33 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                   e.stopPropagation();
                   setAuthModalOpen(true);
                 }}
-                className="group/lock flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EBE5DA] border border-[#D8CFBF] text-[#8B3E1E] text-xs font-semibold cursor-pointer transition-colors"
-                title="Sign in to view wholesale volume pricing"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#F2DFAE] text-[#9C6B1A] text-xs font-semibold hover:bg-[#C08829] hover:text-white transition-colors"
               >
-                <Lock className="w-3 h-3 text-[#C85A32]" />
+                <Lock className="w-3 h-3" />
                 <span>Register to view price</span>
               </button>
             )}
-
-            <div className="text-right">
-              <div className="text-[10px] uppercase font-semibold text-[#888] tracking-wider">MOQ</div>
-              <div className="text-xs font-bold text-[#112225]">
-                {product.moq.toLocaleString()} <span className="font-normal text-[#6E685F]">{product.unit}</span>
-              </div>
-            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-1">
             <button
               id={`btn-inquire-${product.id}`}
               onClick={handleInquire}
-              className="w-full py-2 px-2 bg-[#F3EFE6] hover:bg-[#EBE5DA] active:bg-[#E0D8CA] text-[#162C30] text-xs font-semibold rounded-lg border border-[#D8CFBF] flex items-center justify-center gap-1 transition-colors cursor-pointer"
+              className="flex-1 bg-none border border-[#1B2340] text-[#1B2340] py-2 text-xs font-semibold rounded-[7px] hover:bg-[#1B2340] hover:text-white transition-colors cursor-pointer text-center"
             >
-              <MessageSquare className="w-3.5 h-3.5 text-[#C85A32]" />
-              <span>Inquire / RFQ</span>
+              Inquire / RFQ
             </button>
 
             <button
               id={`btn-order-${product.id}`}
               onClick={handleOrder}
               disabled={product.stockStatus === 'out_of_stock'}
-              className={`w-full py-2 px-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-colors cursor-pointer ${
-                product.stockStatus === 'out_of_stock'
-                  ? 'bg-[#E5DFD5] text-[#999] cursor-not-allowed'
-                  : 'bg-[#C85A32] hover:bg-[#A34320] active:bg-[#8B3618] text-white shadow-xs'
+              className={`flex-1 bg-[#C08829] border border-[#C08829] text-[#1B2340] py-2 text-xs font-bold rounded-[7px] hover:bg-[#9C6B1A] hover:text-white transition-colors cursor-pointer text-center ${
+                product.stockStatus === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
-              <ShoppingCart className="w-3.5 h-3.5" />
-              <span>Order</span>
+              Add to cart
             </button>
           </div>
         </div>

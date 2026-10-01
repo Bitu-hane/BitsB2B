@@ -21,6 +21,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { StockStatus, OrderStatus, Product } from '../types';
+import { CanvasProductImage } from './CanvasProductImage';
 
 export const SellerDashboard: React.FC = () => {
   const {
@@ -232,10 +233,11 @@ export const SellerDashboard: React.FC = () => {
                     {/* Details */}
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <img
+                        <CanvasProductImage
                           src={prod.images[0]}
                           alt={prod.name}
-                          className="w-12 h-12 rounded-lg object-cover border border-[#D8CFBF] bg-[#F7F4EE] shrink-0"
+                          className="w-full h-full object-contain"
+                          containerClassName="w-12 h-12 rounded-lg bg-[#FAF7F2] border border-[#D8CFBF] overflow-hidden shrink-0"
                         />
                         <div className="max-w-xs">
                           <button
@@ -372,7 +374,12 @@ export const SellerDashboard: React.FC = () => {
                   {order.items.map((it, idx) => (
                     <div key={idx} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <img src={it.productImage} alt="" className="w-8 h-8 rounded object-cover" />
+                        <CanvasProductImage
+                          src={it.productImage}
+                          alt={it.productName}
+                          className="w-full h-full object-contain"
+                          containerClassName="w-8 h-8 rounded bg-[#FAF7F2] border border-[#E2E4EA] overflow-hidden shrink-0"
+                        />
                         <span className="font-semibold text-[#112225]">{it.productName}</span>
                       </div>
                       <div>
@@ -441,10 +448,11 @@ export const SellerDashboard: React.FC = () => {
               >
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#EFEAE0]">
                   <div className="flex items-center gap-3">
-                    <img
+                    <CanvasProductImage
                       src={inq.productImage}
                       alt={inq.productName}
-                      className="w-12 h-12 rounded-lg object-cover border border-[#D8CFBF]"
+                      className="w-full h-full object-contain"
+                      containerClassName="w-12 h-12 rounded-lg bg-[#FAF7F2] border border-[#D8CFBF] overflow-hidden shrink-0"
                     />
                     <div>
                       <div className="font-bold text-sm text-[#112225]">{inq.productName}</div>

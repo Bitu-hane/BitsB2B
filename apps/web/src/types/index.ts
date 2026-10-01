@@ -19,6 +19,8 @@ export interface Business {
   city: string;
   subcity?: string;
   verificationStatus: VerificationStatus;
+  canBuy?: boolean;
+  canSell?: boolean;
   licenseNumber?: string;
   tradeLicenseNumber?: string;
   tinNumber?: string;
@@ -40,6 +42,8 @@ export interface User {
   business: Business;
   isSeller: boolean;
   avatar?: string;
+  staffRole?: string;
+  email?: string;
 }
 
 export interface ProductCategory {
@@ -50,6 +54,7 @@ export interface ProductCategory {
   iconName: string;
   image: string;
   itemCount: number;
+  subcategories?: ProductCategory[];
 }
 
 export interface PriceTier {
@@ -64,6 +69,7 @@ export interface Product {
   categoryId: string;
   categoryName: string;
   sellerId: string;
+  sellerBusinessId?: string;
   sellerBusinessName: string;
   sellerVerified: boolean;
   sellerRegion: string;
@@ -82,6 +88,7 @@ export interface Product {
   specifications: Record<string, string>;
   createdAt: string;
   featured?: boolean;
+  status?: string;
 }
 
 export interface DeliveryAddress {

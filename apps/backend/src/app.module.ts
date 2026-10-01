@@ -6,6 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { CatalogModule } from './modules/catalog/catalog.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -28,9 +30,12 @@ import { DatabaseInitService } from './database/database-init.service';
       database: process.env.DB_NAME || 'bitsb2b',
       autoLoadEntities: true,
       synchronize: false,
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     }),
     AuthModule,
     PaymentsModule,
+    AdminModule,
+    CatalogModule,
   ],
   providers: [JwtAuthGuard, RolesGuard, PermissionsGuard, DatabaseInitService],
 })
