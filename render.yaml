@@ -80,27 +80,27 @@ services:
 
       - key: DB_HOST
         fromDatabase:
-          name: bitsb2b-db
+          name: bitsb2b-db-v2
           property: host
 
       - key: DB_PORT
         fromDatabase:
-          name: bitsb2b-db
+          name: bitsb2b-db-v2
           property: port
 
       - key: DB_USERNAME
         fromDatabase:
-          name: bitsb2b-db
+          name: bitsb2b-db-v2
           property: user
 
       - key: DB_PASSWORD
         fromDatabase:
-          name: bitsb2b-db
+          name: bitsb2b-db-v2
           property: password
 
       - key: DB_NAME
         fromDatabase:
-          name: bitsb2b-db
+          name: bitsb2b-db-v2
           property: database
 
       - key: JWT_SECRET
@@ -127,8 +127,8 @@ services:
 
 databases:
   # 3. PostgreSQL
-  - name: bitsb2b-db
+  - name: bitsb2b-db-v2
     region: singapore
-    plan: starter
+    plan: free
     databaseName: bitsb2b
     user: bitsb2b_user
