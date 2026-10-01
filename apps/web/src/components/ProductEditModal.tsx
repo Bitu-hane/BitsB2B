@@ -20,20 +20,19 @@ export const ProductEditModal: React.FC = () => {
   } = useMarketplace();
 
   const [name, setName] = useState('');
-  const [categoryId, setCategoryId] = useState(categories[0]?.id || 'cat-industrial');
-  const [price, setPrice] = useState<number>(1000);
-  const [moq, setMoq] = useState<number>(10);
-  const [unit, setUnit] = useState('pieces');
-  const [stockStatus, setStockStatus] = useState<StockStatus>('in_stock');
-  const [stockQuantity, setStockQuantity] = useState<number>(500);
-  const [leadTime, setLeadTime] = useState('3-5 business days');
-  const [imageUrl, setImageUrl] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [price, setPrice] = useState<number | ''>('');
+  const [moq, setMoq] = useState<number | ''>('');
+  const [unit, setUnit] = useState('');
+  const [stockStatus, setStockStatus] = useState<StockStatus | ''>('');
+  const [stockQuantity, setStockQuantity] = useState<number | ''>('');
+  const [leadTime, setLeadTime] = useState('');
+  const [images, setImages] = useState<string[]>([]);
+  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [isProcessingImages, setIsProcessingImages] = useState(false);
   const [description, setDescription] = useState('');
-  const [deliveryZones, setDeliveryZones] = useState('Addis Ababa Metro, Oromia, Hawassa IP, Dire Dawa');
-  const [specs, setSpecs] = useState<{ key: string; value: string }[]>([
-    { key: 'Material', value: 'Commercial Grade' },
-    { key: 'Warranty', value: '12 Months' },
-  ]);
+  const [deliveryZones, setDeliveryZones] = useState('');
+  const [specs, setSpecs] = useState<{ key: string; value: string }[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -47,7 +46,8 @@ export const ProductEditModal: React.FC = () => {
       setStockStatus(editingProduct.stockStatus);
       setStockQuantity(editingProduct.stockQuantity);
       setLeadTime(editingProduct.leadTime);
-      setImageUrl(editingProduct.images[0] || '');
+      setImages(editingProduct.images || []);
+      setImageUrlInput('');
       setDescription(editingProduct.description);
       setDeliveryZones(editingProduct.deliveryZones.join(', '));
       setSpecs(
@@ -55,20 +55,18 @@ export const ProductEditModal: React.FC = () => {
       );
     } else {
       setName('');
-      setCategoryId(categories[0]?.id || 'cat-industrial');
-      setPrice(2500);
-      setMoq(5);
-      setUnit('pieces');
-      setStockStatus('in_stock');
-      setStockQuantity(250);
-      setLeadTime('2-4 business days');
-      setImageUrl('https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80');
+      setCategoryId('');
+      setPrice('');
+      setMoq('');
+      setUnit('');
+      setStockStatus('');
+      setStockQuantity('');
+      setLeadTime('');
+      setImages([]);
+      setImageUrlInput('');
       setDescription('');
-      setDeliveryZones('Addis Ababa Metro, Oromia, Hawassa, Nationwide Freight');
-      setSpecs([
-        { key: 'Material', value: 'Industrial Grade' },
-        { key: 'Standard', value: 'ISO-9001 / Ethiopian Standard' },
-      ]);
+      setDeliveryZones('');
+      setSpecs([]);
     }
   }, [editingProduct, categories]);
 
@@ -90,12 +88,19 @@ export const ProductEditModal: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || !categoryId || !unit || !stockStatus || images.length === 0) {
+      setErrorMessage('Complete the required fields and upload a supplier product picture before publishing.');
+      return;
+    }
 
     setErrorMessage(null);
     setSubmitting(true);
 
-    const catObj = categories.find(c => c.id === categoryId) || categories[0];
+    const catObj = categories.find(c => c.id === categoryId);
+    if (!catObj) return;
+    const numericPrice = Number(price);
+    const numericMoq = Number(moq);
+    const numericStockQuantity = Number(stockQuantity) || 0;
     const parsedSpecs: Record<string, string> = {};
     specs.forEach(s => {
       if (s.key.trim() && s.value.trim()) {
@@ -106,8 +111,8 @@ export const ProductEditModal: React.FC = () => {
     const parsedZones = deliveryZones.split(',').map(z => z.trim()).filter(Boolean);
 
     const priceTiers = [
-      { minQty: moq, maxQty: moq * 4, pricePerUnit: price },
-      { minQty: moq * 4 + 1, pricePerUnit: Math.round(price * 0.9) },
+      { minQty: numericMoq, maxQty: numericMoq * 4, pricePerUnit: numericPrice },
+      { minQty: numericMoq * 4 + 1, pricePerUnit: Math.round(numericPrice * 0.9) },
     ];
 
     if (editingProduct) {
@@ -115,13 +120,13 @@ export const ProductEditModal: React.FC = () => {
         name,
         categoryId: catObj.id,
         categoryName: catObj.name,
-        price,
-        moq,
+        price: numericPrice,
+        moq: numericMoq,
         unit,
         stockStatus,
-        stockQuantity,
+        stockQuantity: numericStockQuantity,
         leadTime,
-        images: [imageUrl || editingProduct.images[0]],
+        images,
         description,
         deliveryZones: parsedZones.length > 0 ? parsedZones : editingProduct.deliveryZones,
         specifications: parsedSpecs,
@@ -138,17 +143,17 @@ export const ProductEditModal: React.FC = () => {
         sellerBusinessName: currentUser?.business.name || 'Ethio-Machinery & Engineering PLC',
         sellerVerified: currentUser?.business.verificationStatus === 'verified',
         sellerRegion: currentUser?.business.region || 'Addis Ababa',
-        price,
+        price: numericPrice,
         currency: 'ETB',
         priceTiers,
-        moq,
+        moq: numericMoq,
         unit,
-        stockStatus,
-        stockQuantity,
+        stockStatus: stockStatus as StockStatus,
+        stockQuantity: numericStockQuantity,
         stockLastUpdated: 'Just now',
         leadTime,
-        deliveryZones: parsedZones.length > 0 ? parsedZones : ['Addis Ababa', 'Nationwide'],
-        images: [imageUrl || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'],
+        deliveryZones: parsedZones,
+        images,
         description,
         specifications: parsedSpecs,
         featured: false,
@@ -176,7 +181,7 @@ export const ProductEditModal: React.FC = () => {
     <AnimatePresence>
       <div
         id="product-edit-modal-backdrop"
-        className="fixed inset-0 z-50 bg-[#0B1718]/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+        className="fixed inset-0 z-50 bg-[#1B2340]/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
         onClick={() => {
           setProductEditModalOpen(false);
           setEditingProduct(null);
@@ -187,19 +192,19 @@ export const ProductEditModal: React.FC = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           onClick={e => e.stopPropagation()}
-          className="bg-[#FFFFFF] text-[#162C30] rounded-2xl max-w-3xl w-full shadow-2xl border border-[#E5DFD5] overflow-hidden max-h-[92vh] flex flex-col"
+          className="bg-[#FFFFFF] text-[#1E2128] rounded-[18px] max-w-3xl w-full shadow-2xl border border-[#E2E4EA] overflow-hidden max-h-[92vh] flex flex-col"
         >
           {/* Header */}
-          <div className="bg-[#112225] text-[#F7F4EE] p-5 border-b border-[#274B52] flex items-center justify-between shrink-0">
+          <div className="bg-[#1B2340] text-[#F4EFE3] p-5 border-b border-[#2E3A63] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#C85A32] flex items-center justify-center text-white font-bold text-xs">
+              <div className="w-8 h-8 rounded-lg bg-[#C08829] flex items-center justify-center text-[#1B2340] font-bold text-xs">
                 <Layers className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-[#F7F4EE]">
+                <h2 className="font-serif text-base font-semibold text-[#F4EFE3]">
                   {editingProduct ? 'Edit Catalog Listing' : 'Publish New Wholesale Product'}
                 </h2>
-                <p className="text-xs text-[#A8A196]">
+                <p className="text-xs text-[#A7AECB]">
                   Configure B2B price tiers, MOQ, manual stock levels, and freight zones
                 </p>
               </div>
@@ -248,10 +253,12 @@ export const ProductEditModal: React.FC = () => {
                   Category *
                 </label>
                 <select
+                  required
                   value={categoryId}
                   onChange={e => setCategoryId(e.target.value)}
                   className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
                 >
+                  <option value="" disabled>Select a category</option>
                   {categories.map(c => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -272,7 +279,8 @@ export const ProductEditModal: React.FC = () => {
                   required
                   min={1}
                   value={price}
-                  onChange={e => setPrice(parseFloat(e.target.value) || 0)}
+                  onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                  placeholder="Enter price"
                   className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
                 />
               </div>
@@ -286,7 +294,8 @@ export const ProductEditModal: React.FC = () => {
                   required
                   min={1}
                   value={moq}
-                  onChange={e => setMoq(parseInt(e.target.value) || 1)}
+                  onChange={e => setMoq(e.target.value === '' ? '' : Number(e.target.value))}
+                  placeholder="Enter MOQ"
                   className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
                 />
               </div>
@@ -296,10 +305,12 @@ export const ProductEditModal: React.FC = () => {
                   Unit Measure *
                 </label>
                 <select
+                  required
                   value={unit}
                   onChange={e => setUnit(e.target.value)}
                   className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
                 >
+                  <option value="" disabled>Select unit</option>
                   <option value="pieces">Pieces (pcs)</option>
                   <option value="sets">Sets / Units</option>
                   <option value="rolls">Rolls</option>
@@ -316,10 +327,12 @@ export const ProductEditModal: React.FC = () => {
                   Stock Status *
                 </label>
                 <select
+                  required
                   value={stockStatus}
-                  onChange={e => setStockStatus(e.target.value as StockStatus)}
+                  onChange={e => setStockStatus(e.target.value as StockStatus | '')}
                   className="w-full px-3 py-2 bg-white border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
                 >
+                  <option value="" disabled>Select stock status</option>
                   <option value="in_stock">In Stock</option>
                   <option value="low_stock">Low Stock</option>
                   <option value="out_of_stock">Out of Stock</option>
@@ -333,7 +346,8 @@ export const ProductEditModal: React.FC = () => {
                 <input
                   type="number"
                   value={stockQuantity}
-                  onChange={e => setStockQuantity(parseInt(e.target.value) || 0)}
+                  onChange={e => setStockQuantity(e.target.value === '' ? '' : Number(e.target.value))}
+                  placeholder="Enter available quantity"
                   className="w-full px-3 py-2 bg-white border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
                 />
               </div>

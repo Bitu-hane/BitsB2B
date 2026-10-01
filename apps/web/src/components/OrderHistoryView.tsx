@@ -69,12 +69,12 @@ export const OrderHistoryView: React.FC = () => {
   return (
     <div id="order-history-view-container" className="max-w-[1240px] mx-auto px-4 sm:px-8 py-8 space-y-6">
       {/* 1. Orders Hero Banner (Dark Bottle Green) */}
-      <div className="bg-[#223B28] text-[#F4EFE3] rounded-[18px] p-[30px_32px] flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="bg-[#1B2340] text-[#F4EFE3] rounded-[18px] p-[30px_32px] flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div>
           <h3 className="font-serif text-[21px] font-semibold text-white mb-2">
             My orders &amp; escrow tracking
           </h3>
-          <p className="text-[#C7D4C9] text-[13.5px] leading-relaxed max-w-[58ch]">
+          <p className="text-[#A7AECB] text-[13.5px] leading-relaxed max-w-[58ch]">
             Real-time milestone tracking for wholesale dispatches across Ethiopia. Every Birr stays in Telebirr or CBE Birr escrow until you confirm physical receipt.
           </p>
         </div>

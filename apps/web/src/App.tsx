@@ -91,7 +91,7 @@ const MarketplaceContent: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] text-[#162C30] flex flex-col font-sans selection:bg-[#C85A32]/20 selection:text-[#112225]">
+    <div className="min-h-screen bg-[#F1F2F5] text-[#1E2128] flex flex-col font-sans selection:bg-[#C08829]/20 selection:text-[#1B2340]">
       {/* 1. Real-time SMS Notification Toast Banner (UC16) */}
       <SMSNotificationBanner />
 

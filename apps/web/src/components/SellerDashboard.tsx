@@ -83,17 +83,17 @@ export const SellerDashboard: React.FC = () => {
   };
 
   return (
-    <div id="seller-dashboard-container" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div id="seller-dashboard-container" className="max-w-[1240px] mx-auto px-4 sm:px-8 py-8 space-y-6">
       {/* Header Banner */}
-      <div className="bg-[#112225] text-[#F7F4EE] rounded-2xl p-6 border border-[#274B52] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="bg-[#1B2340] text-[#F4EFE3] rounded-[18px] p-6 border border-[#2E3A63] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#C85A32] flex items-center justify-center text-white font-bold text-base shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-[#C08829] flex items-center justify-center text-[#1B2340] font-bold text-base shadow-sm">
               <Store className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight">
+                <h1 className="font-serif text-[21px] font-semibold tracking-tight">
                   {currentUser?.business.name || 'Supplier Control Center'}
                 </h1>
                 {currentUser?.business.verificationStatus === 'verified' && (
@@ -102,8 +102,8 @@ export const SellerDashboard: React.FC = () => {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-[#A8A196] mt-0.5">
-                Role: <strong className="capitalize text-[#E27D56]">{currentUser?.business.role || 'Producer'}</strong> &bull; Region: {currentUser?.business.region || 'Addis Ababa'}
+              <p className="text-xs text-[#A7AECB] mt-0.5">
+                Role: <strong className="capitalize text-[#F2DFAE]">{currentUser?.business.role || 'Producer'}</strong> &bull; Region: {currentUser?.business.region || 'Addis Ababa'}
               </p>
             </div>
           </div>
@@ -112,7 +112,7 @@ export const SellerDashboard: React.FC = () => {
         <button
           id="btn-seller-add-new-product"
           onClick={handleAddNewProduct}
-          className="px-4 py-2.5 bg-[#C85A32] hover:bg-[#A34320] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md"
+          className="px-4 py-2.5 bg-[#C08829] hover:bg-[#9C6B1A] text-[#1B2340] hover:text-white font-bold text-xs rounded-[8px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Product Listing</span>
@@ -121,7 +121,7 @@ export const SellerDashboard: React.FC = () => {
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 bg-white rounded-2xl border border-[#E5DFD5] shadow-xs">
+        <div className="p-4 bg-white rounded-[11px] border border-[#E2E4EA] shadow-xs">
           <span className="text-[11px] font-semibold text-[#888] uppercase tracking-wider block">
             Published Catalog Listings
           </span>
@@ -130,7 +130,7 @@ export const SellerDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-[#E5DFD5] shadow-xs">
+        <div className="p-4 bg-white rounded-[11px] border border-[#E2E4EA] shadow-xs">
           <span className="text-[11px] font-semibold text-[#888] uppercase tracking-wider block">
             Orders Requiring Dispatch
           </span>
@@ -139,7 +139,7 @@ export const SellerDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-[#E5DFD5] shadow-xs">
+        <div className="p-4 bg-white rounded-[11px] border border-[#E2E4EA] shadow-xs">
           <span className="text-[11px] font-semibold text-[#888] uppercase tracking-wider block">
             Unanswered RFQ Inquiries
           </span>
@@ -148,7 +148,7 @@ export const SellerDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-[#E5DFD5] shadow-xs">
+        <div className="p-4 bg-white rounded-[11px] border border-[#E2E4EA] shadow-xs">
           <span className="text-[11px] font-semibold text-[#888] uppercase tracking-wider block">
             Total Sales (Escrow Volume)
           </span>
