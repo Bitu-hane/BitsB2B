@@ -86,6 +86,37 @@ export const ProductEditModal: React.FC = () => {
     );
   };
 
+  const addImages = async (sources: (File | string)[]) => {
+    const availableSlots = Math.max(0, 6 - images.length);
+    if (!availableSlots) {
+      setErrorMessage('You can add up to six product photos. Remove one before adding another.');
+      return;
+    }
+
+    setIsProcessingImages(true);
+    try {
+      const processed = await Promise.all(
+        sources.slice(0, availableSlots).map(source => processProductImage(source, { targetSize: 800, addBrandTag: true })),
+      );
+      setImages(current => [...current, ...processed.filter(Boolean)]);
+      setImageUrlInput('');
+    } catch {
+      setErrorMessage('We could not process one or more images. Please try another image file.');
+    } finally {
+      setIsProcessingImages(false);
+    }
+  };
+
+  const makePrimaryImage = (index: number) => {
+    setImages(current => {
+      const selectedImage = current[index];
+      if (!selectedImage || index === 0) return current;
+      // The primary product image is always index 0. Moving the selected image
+      // there automatically makes the former primary image a secondary image.
+      return [selectedImage, ...current.filter((_, imageIndex) => imageIndex !== index)];
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !categoryId || !unit || !stockStatus || images.length === 0) {
@@ -181,30 +212,31 @@ export const ProductEditModal: React.FC = () => {
     <AnimatePresence>
       <div
         id="product-edit-modal-backdrop"
-        className="fixed inset-0 z-50 bg-[#1B2340]/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+        className="fixed inset-0 z-50 bg-[#1B2340]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
         onClick={() => {
           setProductEditModalOpen(false);
           setEditingProduct(null);
         }}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
+          initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
+          exit={{ opacity: 0, scale: 0.96, y: 20 }}
+          transition={{ duration: 0.2 }}
           onClick={e => e.stopPropagation()}
-          className="bg-[#FFFFFF] text-[#1E2128] rounded-[18px] max-w-3xl w-full shadow-2xl border border-[#E2E4EA] overflow-hidden max-h-[92vh] flex flex-col"
+          className="bg-[#FBF9F5] text-[#1B2340] rounded-2xl max-w-4xl w-full shadow-2xl border border-[#E2D9C8] overflow-hidden max-h-[92vh] flex flex-col"
         >
           {/* Header */}
-          <div className="bg-[#1B2340] text-[#F4EFE3] p-5 border-b border-[#2E3A63] flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#C08829] flex items-center justify-center text-[#1B2340] font-bold text-xs">
-                <Layers className="w-4 h-4" />
+          <div className="bg-[#1B2340] text-[#FBF9F5] px-6 py-5 border-b border-[#2E3A63] flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#C08829] flex items-center justify-center text-[#1B2340] font-bold shadow-sm">
+                <Layers className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-serif text-base font-semibold text-[#F4EFE3]">
-                  {editingProduct ? 'Edit Catalog Listing' : 'Publish New Wholesale Product'}
+                <h2 className="font-serif text-lg font-bold text-[#FBF9F5] tracking-wide">
+                  {editingProduct ? 'Edit Catalog Listing' : 'Publish Wholesale Product'}
                 </h2>
-                <p className="text-xs text-[#A7AECB]">
+                <p className="text-xs text-[#94A3B8] mt-0.5">
                   Configure B2B price tiers, MOQ, manual stock levels, and freight zones
                 </p>
               </div>
@@ -214,329 +246,387 @@ export const ProductEditModal: React.FC = () => {
                 setProductEditModalOpen(false);
                 setEditingProduct(null);
               }}
-              className="text-[#888] hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+              className="text-[#94A3B8] hover:text-white hover:bg-white/10 p-2 rounded-xl transition-all cursor-pointer"
+              aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+          <form onSubmit={handleSubmit} className="bg-[#FBF9F5] p-6 overflow-y-auto flex flex-col space-y-6 flex-1 text-xs">
             {/* Subscription Limit / Validation Error Banner */}
             {errorMessage && (
-              <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 flex items-start gap-3 text-[#1B2340]">
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-amber-500/10 border border-[#C08829]/40 rounded-2xl p-4 flex items-start gap-3.5 text-[#1B2340]"
+              >
                 <ShieldAlert className="w-5 h-5 text-[#C08829] shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <span className="font-bold block text-sm text-[#1B2340]">Subscription Limitation</span>
-                  <span className="text-xs text-[#6B7078] block leading-relaxed">{errorMessage}</span>
+                  <span className="font-bold text-sm text-[#1B2340] block">Action Required</span>
+                  <span className="text-xs text-[#524B40] block leading-relaxed">{errorMessage}</span>
                 </div>
-              </div>
+              </motion.div>
             )}
 
-            {/* Title & Category */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="sm:col-span-2">
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Product Name / Industrial Model *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="e.g. Three-Phase Industrial Water Pump 15kW"
-                  className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Category *
-                </label>
-                <select
-                  required
-                  value={categoryId}
-                  onChange={e => setCategoryId(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                >
-                  <option value="" disabled>Select a category</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Price, Unit, MOQ */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Unit Price (ETB) *
-                </label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  value={price}
-                  onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                  placeholder="Enter price"
-                  className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Minimum Order Qty (MOQ) *
-                </label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  value={moq}
-                  onChange={e => setMoq(e.target.value === '' ? '' : Number(e.target.value))}
-                  placeholder="Enter MOQ"
-                  className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Unit Measure *
-                </label>
-                <select
-                  required
-                  value={unit}
-                  onChange={e => setUnit(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                >
-                  <option value="" disabled>Select unit</option>
-                  <option value="pieces">Pieces (pcs)</option>
-                  <option value="sets">Sets / Units</option>
-                  <option value="rolls">Rolls</option>
-                  <option value="cartons">Cartons / Boxes</option>
-                  <option value="metric tons">Metric Tons (MT)</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Stock Management & Lead Time (UC15 Manual Stock) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-[#FAF7F2] rounded-xl border border-[#E5DFD5]">
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Stock Status *
-                </label>
-                <select
-                  required
-                  value={stockStatus}
-                  onChange={e => setStockStatus(e.target.value as StockStatus | '')}
-                  className="w-full px-3 py-2 bg-white border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                >
-                  <option value="" disabled>Select stock status</option>
-                  <option value="in_stock">In Stock</option>
-                  <option value="low_stock">Low Stock</option>
-                  <option value="out_of_stock">Out of Stock</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Current Available Stock Qty
-                </label>
-                <input
-                  type="number"
-                  value={stockQuantity}
-                  onChange={e => setStockQuantity(e.target.value === '' ? '' : Number(e.target.value))}
-                  placeholder="Enter available quantity"
-                  className="w-full px-3 py-2 bg-white border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-[#112225] mb-1">
-                  Dispatch Lead Time
-                </label>
-                <input
-                  type="text"
-                  value={leadTime}
-                  onChange={e => setLeadTime(e.target.value)}
-                  placeholder="e.g. 2-4 business days"
-                  className="w-full px-3 py-2 bg-white border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                />
-              </div>
-            </div>
-
-            {/* Image URL / File Upload with Automatic Canvas Processor */}
-            <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#E5DFD5] space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block font-semibold text-[#112225]">
-                  Supplier Product Picture (Auto-Canvas Processed) *
-                </label>
-                <span className="text-[10px] font-bold text-[#C85A32] bg-[#C85A32]/10 px-2 py-0.5 rounded-md">
-                  Auto 1:1 Canvas Frame
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* SECTION 1: Product Photos & Visual Identity */}
+            <div className="bg-white rounded-2xl border border-[#E2D9C8] p-5 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#F0EBE1]">
                 <div>
-                  <label className="block text-[11px] font-medium text-[#6E685F] mb-1">
-                    Option A: Upload Picture File
-                  </label>
+                  <h3 className="font-serif text-sm font-bold text-[#1B2340] flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-[#C08829]" />
+                    Product Photos & Visual Media <span className="text-[#C08829]">*</span>
+                  </h3>
+                  <p className="text-[11px] text-[#78716C] mt-0.5">
+                    Upload up to 6 photos. The first image will be set as the primary catalog photo.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-[#1B2340] bg-[#C08829]/15 border border-[#C08829]/30 px-2.5 py-1 rounded-full">
+                    {images.length}/6 Photos Uploaded
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-end">
+                <label className="block rounded-xl border-2 border-dashed border-[#D6CBB8] bg-[#FDFBF7] px-5 py-4 cursor-pointer hover:border-[#C08829] hover:bg-[#FAF7F2] transition-all group">
+                  <span className="flex items-center gap-2 text-xs font-bold text-[#1B2340] group-hover:text-[#C08829] transition-colors">
+                    <Plus className="w-4 h-4 text-[#C08829]" /> Choose photos from device
+                  </span>
+                  <span className="mt-1 block text-[11px] text-[#78716C]">
+                    High quality JPG, PNG, or WEBP · 1:1 Aspect ratio canvas
+                  </span>
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={async e => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        try {
-                          const canvasUrl = await processProductImage(file, { targetSize: 800, addBrandTag: true });
-                          setImageUrl(canvasUrl);
-                        } catch (err) {
-                          console.error('Failed to process uploaded file with canvas:', err);
-                        }
-                      }
+                    multiple
+                    className="sr-only"
+                    onChange={e => {
+                      const files = Array.from(e.target.files || []);
+                      if (files.length) addImages(files);
+                      e.currentTarget.value = '';
                     }}
-                    className="w-full text-xs text-[#112225] file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#112225] file:text-white hover:file:bg-[#C85A32] file:cursor-pointer"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#6E685F] mb-1">
-                    Option B: Paste Image Web URL
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={imageUrl}
-                      onChange={e => setImageUrl(e.target.value)}
-                      placeholder="https://..."
-                      className="flex-1 px-3 py-1.5 bg-white border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-                    />
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        if (imageUrl) {
-                          try {
-                            const canvasUrl = await processProductImage(imageUrl, { targetSize: 800, addBrandTag: true });
-                            setImageUrl(canvasUrl);
-                          } catch (err) {
-                            console.error('Failed to process URL with canvas:', err);
-                          }
-                        }
-                      }}
-                      className="px-3 py-1.5 bg-[#C85A32] text-white font-semibold text-xs rounded-xl hover:bg-[#A34320] transition-colors cursor-pointer shrink-0"
-                    >
-                      Fit Canvas
-                    </button>
-                  </div>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={imageUrlInput}
+                    onChange={e => setImageUrlInput(e.target.value)}
+                    placeholder="Paste image URL..."
+                    className="min-w-0 flex-1 px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-xs text-[#1B2340] focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  />
+                  <button
+                    type="button"
+                    disabled={!imageUrlInput || isProcessingImages}
+                    onClick={() => addImages([imageUrlInput])}
+                    className="px-4 py-2.5 bg-[#1B2340] disabled:opacity-40 text-white font-semibold text-xs rounded-xl hover:bg-[#2A3558] transition-all cursor-pointer shadow-sm"
+                  >
+                    Add URL
+                  </button>
                 </div>
               </div>
 
-              {/* Live Canvas Preview */}
-              {imageUrl && (
-                <div className="mt-2 flex items-center gap-3 p-2 bg-white rounded-lg border border-[#E5DFD5]">
-                  <div className="w-16 h-16 rounded-lg overflow-hidden border border-[#D8CFBF] shrink-0 bg-[#F8F9FA] flex items-center justify-center">
-                    <img src={imageUrl} alt="Canvas preview" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="text-[11px] text-[#6E685F]">
-                    <div className="font-bold text-[#112225] flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Canvas Processed (1:1 Aspect Ratio)</span>
+              {isProcessingImages && (
+                <p className="text-[11px] font-medium text-[#C08829] animate-pulse">
+                  Processing image canvas and optimization...
+                </p>
+              )}
+
+              {images.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2">
+                  {images.map((image, index) => (
+                    <div
+                      key={`${image.slice(0, 24)}-${index}`}
+                      className="group relative aspect-square overflow-hidden rounded-xl border border-[#E2D9C8] bg-[#FAF8F5] shadow-xs"
+                    >
+                      <img
+                        src={image}
+                        alt={`Product photo ${index + 1}`}
+                        className="w-full h-full object-contain p-1"
+                      />
+                      {index === 0 ? (
+                        <span className="absolute left-1.5 top-1.5 rounded-md bg-[#1B2340] px-2 py-0.5 text-[9px] font-bold text-[#FBF9F5] shadow-sm">
+                          Primary
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => makePrimaryImage(index)}
+                          className="absolute inset-x-1.5 bottom-1.5 opacity-0 group-hover:opacity-100 focus:opacity-100 rounded-lg bg-[#1B2340]/95 px-2 py-1 text-[9px] font-bold text-white transition-opacity shadow-sm"
+                        >
+                          Make primary
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setImages(current => current.filter((_, imageIndex) => imageIndex !== index))}
+                        className="absolute right-1.5 top-1.5 rounded-md bg-white/95 p-1 text-[#64748B] hover:text-rose-600 shadow-sm transition-colors"
+                        aria-label={`Remove photo ${index + 1}`}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-                    <span>Edge background auto-sampled &amp; product safety margin applied.</span>
-                  </div>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Freight & Delivery Zones */}
-            <div>
-              <label className="block font-semibold text-[#112225] mb-1">
-                Eligible Freight Zones (Comma Separated)
-              </label>
-              <input
-                type="text"
-                value={deliveryZones}
-                onChange={e => setDeliveryZones(e.target.value)}
-                placeholder="Addis Ababa Metro, Oromia, Hawassa IP, Dire Dawa"
-                className="w-full px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-              />
-            </div>
+            {/* SECTION 2: Basic Product Information */}
+            <div className="bg-white rounded-2xl border border-[#E2D9C8] p-5 shadow-sm space-y-4">
+              <h3 className="font-serif text-sm font-bold text-[#1B2340] pb-2 border-b border-[#F0EBE1] flex items-center gap-2">
+                <Tag className="w-4 h-4 text-[#C08829]" />
+                Product Identification & Category
+              </h3>
 
-            {/* Description */}
-            <div>
-              <label className="block font-semibold text-[#112225] mb-1">
-                Detailed Product Description &amp; Industrial Application
-              </label>
-              <textarea
-                rows={3}
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                placeholder="Describe material grading, performance capacity, assembly requirements..."
-                className="w-full p-3 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-[#112225] focus:outline-none focus:border-[#C85A32]"
-              />
-            </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-[#1B2340] mb-1.5">
+                    Product Name / Industrial Model <span className="text-[#C08829]">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="e.g. Three-Phase Industrial Water Pump 15kW"
+                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  />
+                </div>
 
-            {/* Dynamic Specifications Rows */}
-            <div className="p-3 bg-[#FBF9F5] rounded-xl border border-[#E5DFD5] space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-[#112225]">Technical Specifications Sheet</span>
-                <button
-                  type="button"
-                  onClick={handleAddSpecRow}
-                  className="text-[11px] font-semibold text-[#C85A32] hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <Plus className="w-3 h-3" /> Add Spec
-                </button>
+                <div>
+                  <label className="block font-semibold text-[#1B2340] mb-1.5">
+                    Category (Loaded from Database) <span className="text-[#C08829]">*</span>
+                  </label>
+                  <select
+                    required
+                    value={categoryId}
+                    onChange={e => setCategoryId(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  >
+                    <option value="" disabled>Select a category</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                {specs.map((s, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
+              {/* Price, MOQ, Unit */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+                <div>
+                  <label className="block font-semibold text-[#1B2340] mb-1.5">
+                    Unit Price (ETB) <span className="text-[#C08829]">*</span>
+                  </label>
+                  <div className="relative">
                     <input
-                      type="text"
-                      value={s.key}
-                      onChange={e => handleSpecChange(idx, 'key', e.target.value)}
-                      placeholder="e.g. Voltage / Flow / Material"
-                      className="w-1/3 px-3 py-1.5 bg-white border border-[#D8CFBF] rounded-lg text-[#112225]"
+                      type="number"
+                      required
+                      min={1}
+                      value={price}
+                      onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                      placeholder="e.g. 45000"
+                      className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
                     />
-                    <input
-                      type="text"
-                      value={s.value}
-                      onChange={e => handleSpecChange(idx, 'value', e.target.value)}
-                      placeholder="e.g. 380V 50Hz / 120 m3/h"
-                      className="flex-1 px-3 py-1.5 bg-white border border-[#D8CFBF] rounded-lg text-[#112225]"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSpecRow(idx)}
-                      className="text-[#888] hover:text-[#C85A32] p-1.5 cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
                   </div>
-                ))}
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-[#1B2340] mb-1.5">
+                    Minimum Order Qty (MOQ) <span className="text-[#C08829]">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={1}
+                    value={moq}
+                    onChange={e => setMoq(e.target.value === '' ? '' : Number(e.target.value))}
+                    placeholder="e.g. 5"
+                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-[#1B2340] mb-1.5">
+                    Unit Measure <span className="text-[#C08829]">*</span>
+                  </label>
+                  <select
+                    required
+                    value={unit}
+                    onChange={e => setUnit(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  >
+                    <option value="" disabled>Select unit</option>
+                    <option value="pieces">Pieces (pcs)</option>
+                    <option value="sets">Sets / Units</option>
+                    <option value="rolls">Rolls</option>
+                    <option value="cartons">Cartons / Boxes</option>
+                    <option value="metric tons">Metric Tons (MT)</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            {/* Submit buttons */}
-            <div className="flex justify-end gap-2 pt-2 border-t border-[#EFEAE0]">
+            {/* SECTION 3: Inventory & Dispatch Lead Time */}
+            <div className="bg-white rounded-2xl border border-[#E2D9C8] p-5 shadow-sm space-y-4">
+              <h3 className="font-serif text-sm font-bold text-[#1B2340] pb-2 border-b border-[#F0EBE1] flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#C08829]" />
+                Inventory &amp; Dispatch Availability
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block font-semibold text-[#1B2340] mb-1.5">
+                    Stock Status <span className="text-[#C08829]">*</span>
+                  </label>
+                  <select
+                    required
+                    value={stockStatus}
+                    onChange={e => setStockStatus(e.target.value as StockStatus | '')}
+                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  >
+                    <option value="" disabled>Select status</option>
+                    <option value="in_stock">In Stock</option>
+                    <option value="low_stock">Low Stock</option>
+                    <option value="out_of_stock">Out of Stock</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-[#1B2340] mb-1.5">
+                    Current Stock Quantity
+                  </label>
+                  <input
+                    type="number"
+                    value={stockQuantity}
+                    onChange={e => setStockQuantity(e.target.value === '' ? '' : Number(e.target.value))}
+                    placeholder="Available quantity..."
+                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-[#1B2340] mb-1.5">
+                    Dispatch Lead Time
+                  </label>
+                  <input
+                    type="text"
+                    value={leadTime}
+                    onChange={e => setLeadTime(e.target.value)}
+                    placeholder="e.g. 2-4 business days"
+                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 4: Freight, Specifications & Description */}
+            <div className="bg-white rounded-2xl border border-[#E2D9C8] p-5 shadow-sm space-y-4">
+              <h3 className="font-serif text-sm font-bold text-[#1B2340] pb-2 border-b border-[#F0EBE1] flex items-center gap-2">
+                <Truck className="w-4 h-4 text-[#C08829]" />
+                Freight, Logistics &amp; Specifications
+              </h3>
+
+              <div>
+                <label className="block font-semibold text-[#1B2340] mb-1.5">
+                  Eligible Freight &amp; Delivery Zones (Comma Separated)
+                </label>
+                <input
+                  type="text"
+                  value={deliveryZones}
+                  onChange={e => setDeliveryZones(e.target.value)}
+                  placeholder="e.g. Addis Ababa Metro, Oromia, Hawassa IP, Dire Dawa"
+                  className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-[#1B2340] mb-1.5">
+                  Detailed Product Description &amp; Industrial Application
+                </label>
+                <textarea
+                  rows={3}
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder="Describe material grading, performance capacity, assembly requirements..."
+                  className="w-full p-3.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                />
+              </div>
+
+              {/* Dynamic Specifications Rows */}
+              <div className="p-4 bg-[#FAF8F5] rounded-xl border border-[#E2D9C8] space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#1B2340] text-xs">Technical Specifications Sheet</span>
+                  <button
+                    type="button"
+                    onClick={handleAddSpecRow}
+                    className="text-xs font-bold text-[#C08829] hover:text-[#1B2340] flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Spec Line
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {specs.map((s, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={s.key}
+                        onChange={e => handleSpecChange(idx, 'key', e.target.value)}
+                        placeholder="e.g. Voltage / Flow Rate"
+                        className="w-1/3 px-3 py-2 bg-white border border-[#E2D9C8] rounded-lg text-[#1B2340] text-xs focus:outline-none focus:border-[#1B2340]"
+                      />
+                      <input
+                        type="text"
+                        value={s.value}
+                        onChange={e => handleSpecChange(idx, 'value', e.target.value)}
+                        placeholder="e.g. 380V 50Hz / 120 m3/h"
+                        className="flex-1 px-3 py-2 bg-white border border-[#E2D9C8] rounded-lg text-[#1B2340] text-xs focus:outline-none focus:border-[#1B2340]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSpecRow(idx)}
+                        className="text-[#94A3B8] hover:text-rose-600 p-1.5 cursor-pointer transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="pt-4 border-t border-[#E2D9C8] flex items-center justify-end gap-3 shrink-0">
               <button
                 type="button"
                 onClick={() => {
                   setProductEditModalOpen(false);
                   setEditingProduct(null);
                 }}
-                className="px-4 py-2 border border-[#D8CFBF] hover:bg-[#F3EFE6] font-semibold text-[#162C30] rounded-xl transition-colors cursor-pointer"
+                className="px-5 py-2.5 border border-[#1B2340]/20 hover:bg-[#1B2340]/5 font-semibold text-[#1B2340] rounded-xl transition-all cursor-pointer text-xs"
               >
                 Cancel
               </button>
               <button
                 type="submit"
+                disabled={submitting}
                 id="btn-save-product-listing"
-                className="px-5 py-2 bg-[#C85A32] hover:bg-[#A34320] text-white font-bold rounded-xl transition-colors cursor-pointer shadow-sm"
+                className="px-6 py-2.5 bg-[#1B2340] hover:bg-[#2A3558] text-[#FBF9F5] font-semibold text-xs rounded-xl transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
-                {editingProduct ? 'Save Listing Changes' : 'Publish Product to Marketplace'}
+                {submitting ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-[#C08829]" />
+                    {editingProduct ? 'Save Listing Changes' : 'Publish Product to Marketplace'}
+                  </>
+                )}
               </button>
             </div>
           </form>

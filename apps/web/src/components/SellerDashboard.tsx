@@ -203,16 +203,10 @@ export const SellerDashboard: React.FC = () => {
       {/* Tab 1: Product Catalog & Stock Toggles */}
       {activeTab === 'products' && (
         <div className="bg-white rounded-2xl border border-[#E5DFD5] shadow-xs overflow-hidden">
-          <div className="p-4 bg-[#FAF7F2] border-b border-[#E5DFD5] flex items-center justify-between">
+          <div className="p-4 bg-[#FAF7F2] border-b border-[#E5DFD5] flex items-center">
             <span className="text-xs font-bold text-[#112225]">
               Catalog Listings with Manual Stock Management
             </span>
-            <button
-              onClick={handleAddNewProduct}
-              className="text-xs font-bold text-[#C85A32] hover:underline cursor-pointer"
-            >
-              + Add Product
-            </button>
           </div>
 
           <div className="overflow-x-auto">

@@ -247,9 +247,34 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
     return [];
   };
 
-  // Sync state from localStorage & fetch live products from DB on mount
+  const [categories, setCategories] = useState<ProductCategory[]>(CATEGORIES);
+
+  const refreshCategoriesFromApi = async () => {
+    try {
+      const res = await api.getCategories();
+      if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+        const mappedCats: ProductCategory[] = res.data.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug || c.id,
+          description: c.description || c.name,
+          iconName: c.icon || 'Layers',
+          image: c.image || '',
+          itemCount: c.productCount || 0,
+        }));
+        setCategories(mappedCats);
+        return mappedCats;
+      }
+    } catch (e) {
+      console.warn('Unable to connect to backend database for categories:', e);
+    }
+    return CATEGORIES;
+  };
+
+  // Sync state from localStorage & fetch live products & categories from DB on mount
   useEffect(() => {
     refreshProductsFromApi();
+    refreshCategoriesFromApi();
 
     try {
       const savedLang = localStorage.getItem('bitsb2b_language_v2');
@@ -1124,7 +1149,7 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
         switchUser,
         logout,
         allUsers,
-        categories: CATEGORIES,
+        categories,
         products,
         selectedCategory,
         setSelectedCategory,
