@@ -3,8 +3,18 @@
  * Centralized HTTP network layer for communicating with NestJS backend API.
  */
 
-const API_BASE_URL =
-  (import.meta as any).env?.VITE_API_URL || "http://localhost:3000";
+const getApiBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host !== "localhost" && host !== "127.0.0.1") {
+      return "https://bitsb2b-backend.onrender.com";
+    }
+  }
+  return "http://localhost:3000";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface ApiError {
   statusCode: number;
