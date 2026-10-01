@@ -114,9 +114,9 @@ const MarketplaceContent: React.FC = () => {
         /* Catalog & Home View */
         <main className="flex-1 pb-16">
           {/* Catalog Top Subheader & Filter Pills Bar (Screenshot 3 Layout) */}
-          <div className="bg-[#F1F2F5] border-b border-[#E2E4EA] py-6">
-            <div className="max-w-[1240px] mx-auto px-4 sm:px-8 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="font-serif font-semibold text-[23px] text-[#1E2128]">
+          <div className="bg-slate-50 border-b border-slate-200 py-6">
+            <div className="max-w-[1280px] mx-auto px-4 sm:px-8 flex flex-wrap items-center justify-between gap-4">
+              <h2 className="font-bold text-2xl tracking-tight text-slate-900">
                 Wholesale catalog
               </h2>
 
@@ -128,8 +128,8 @@ const MarketplaceContent: React.FC = () => {
                   onClick={() => setVerifiedOnly(!verifiedOnly)}
                   className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold transition-colors cursor-pointer border ${
                     verifiedOnly
-                      ? 'bg-[#33553A] text-white border-[#33553A]'
-                      : 'bg-white text-[#1E2128] border-[#E2E4EA] hover:border-[#1E2128]'
+                      ? 'bg-teal-700 text-white border-teal-700 shadow-xs'
+                      : 'bg-white text-slate-700 border-slate-300 hover:border-slate-500'
                   }`}
                 >
                   <span className="text-xs">✓</span>
@@ -143,8 +143,8 @@ const MarketplaceContent: React.FC = () => {
                   onClick={() => setInStockOnly(!inStockOnly)}
                   className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold transition-colors cursor-pointer border ${
                     inStockOnly
-                      ? 'bg-[#33553A] text-white border-[#33553A]'
-                      : 'bg-white text-[#1E2128] border-[#E2E4EA] hover:border-[#1E2128]'
+                      ? 'bg-teal-700 text-white border-teal-700 shadow-xs'
+                      : 'bg-white text-slate-700 border-slate-300 hover:border-slate-500'
                   }`}
                 >
                   <span>In stock only</span>
@@ -155,7 +155,7 @@ const MarketplaceContent: React.FC = () => {
                   id="filter-select-zone"
                   value={selectedZone}
                   onChange={e => setSelectedZone(e.target.value)}
-                  className="bg-white border border-[#E2E4EA] text-[#1E2128] px-3.5 py-2 rounded-full text-[13px] font-semibold focus:outline-none cursor-pointer"
+                  className="bg-white border border-slate-300 text-slate-900 px-3.5 py-2 rounded-full text-[13px] font-semibold focus:outline-none cursor-pointer"
                 >
                   <option value="all">Addis Ababa Metro</option>
                   <option value="Oromia">Oromia Region</option>
