@@ -492,29 +492,32 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
 
     if (data?.user) {
-      const staffRole = data.user.staffRole || data.user.staff_role;
+      const staffRole = data.user.staffRole || (data.user as any).staff_role;
+      const bizType = (data.business?.businessTypeCode || (data.business as any)?.business_type_code || 'producer') as UserRole;
+      const isSeller = Boolean(data.business?.canSell ?? (data.business as any)?.can_sell ?? (bizType === 'producer' || bizType === 'wholesaler' || bizType === 'importer'));
+
       const mappedUser: User = {
         id: data.user.id || `user_${Date.now()}`,
         name: data.user.fullName || data.user.full_name || 'B2B Merchant',
         phone: data.user.phone || cleanPhone,
         email: data.user.email,
         staffRole: staffRole,
-        isSeller: false,
+        isSeller: isSeller,
         business: {
           id: data.business?.id || `biz_${Date.now()}`,
           name: data.business?.name || (data.user.fullName || 'B2B User') + ' Enterprise',
-          role: 'reseller',
+          role: bizType,
           phone: data.user.phone || cleanPhone,
-          region: 'Addis Ababa',
-          city: 'Addis Ababa',
-          subcity: 'Bole Subcity',
-          verificationStatus: 'verified',
+          region: (data.business as any)?.region || 'Addis Ababa',
+          city: (data.business as any)?.city || 'Addis Ababa',
+          subcity: (data.business as any)?.subcity || 'Bole Subcity',
+          verificationStatus: ((data.business as any)?.verificationStatus || (data.business as any)?.verification_status || 'verified') as any,
           establishedYear: 2024,
           averageResponseTime: '< 1 hour',
           responseRate: '100%',
           rating: 4.9,
           totalOrdersCompleted: 12,
-          description: 'Registered Ethiopian B2B enterprise merchant.',
+          description: (data.business as any)?.description || 'Registered Ethiopian B2B enterprise merchant.',
         },
       };
 
