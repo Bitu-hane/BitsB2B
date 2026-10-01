@@ -56,7 +56,7 @@ export const SignUpPage: React.FC = () => {
 
   // Form State
   const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('+2519');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');

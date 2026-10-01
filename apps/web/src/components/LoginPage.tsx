@@ -21,7 +21,7 @@ import { motion } from 'motion/react';
 export const LoginPage: React.FC = () => {
   const { setAuthView, loginWithApi, t } = useMarketplace();
 
-  const [phone, setPhone] = useState('+251911223344');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -21,7 +21,7 @@ export const AuthModal: React.FC = () => {
   // Registration step
   // 1: Phone input -> 2: OTP verification -> 3: Business details & role
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [phone, setPhone] = useState('+251 91 ');
+  const [phone, setPhone] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState<string>('749210');
   const [enteredOtp, setEnteredOtp] = useState('');
   const [otpError, setOtpError] = useState('');
