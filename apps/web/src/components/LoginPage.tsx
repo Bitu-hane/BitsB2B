@@ -13,6 +13,8 @@ import {
   CheckCircle2,
   Loader2,
   UserPlus,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -21,6 +23,7 @@ export const LoginPage: React.FC = () => {
 
   const [phone, setPhone] = useState('+251911223344');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -82,7 +85,7 @@ export const LoginPage: React.FC = () => {
 
           {/* Form Content */}
           <div className="p-6 sm:p-8 space-y-5">
-            {/* Database User Existence Error Banner */}
+            {/* User Account Error Banner */}
             {errorMessage && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -93,7 +96,7 @@ export const LoginPage: React.FC = () => {
                 <div className="space-y-1">
                   <span className="font-bold block">{errorMessage}</span>
                   <span className="text-[11px] text-red-600 block">
-                    Check your phone number formatting or click Sign Up below to create a new account.
+                    Double check your phone number or click Sign Up below to create a new account.
                   </span>
                 </div>
               </motion.div>
@@ -121,7 +124,7 @@ export const LoginPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Password Field */}
+              {/* Password Field with Eye Toggle */}
               <div>
                 <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                   {t('auth.passwordLabel')}
@@ -132,13 +135,21 @@ export const LoginPage: React.FC = () => {
                   </div>
                   <input
                     id="input-login-password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder={t('auth.passwordPlaceholder')}
-                    className="w-full pl-10 pr-3.5 py-3 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829] focus:ring-2 focus:ring-[#C08829]/20 transition-all"
+                    className="w-full pl-10 pr-11 py-3 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829] focus:ring-2 focus:ring-[#C08829]/20 transition-all"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#888] hover:text-[#1B2340] cursor-pointer transition-colors"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 

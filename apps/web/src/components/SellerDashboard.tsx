@@ -41,18 +41,23 @@ export const SellerDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'inquiries'>('products');
   const [inquiryReplyText, setInquiryReplyText] = useState<{ [inqId: string]: string }>({});
 
-  // Filter products for this seller (or all if demo mode)
+  // Filter products strictly for this seller's business
   const sellerBizId = currentUser?.business.id;
+  const sellerBizName = currentUser?.business.name;
+
   const sellerProducts = products.filter(
-    p => p.sellerId === sellerBizId || p.sellerBusinessName === currentUser?.business.name || currentUser?.isSeller
+    p => (sellerBizId && p.sellerId === sellerBizId) ||
+         (sellerBizName && p.sellerBusinessName === sellerBizName)
   );
 
   const sellerOrders = orders.filter(
-    o => o.sellerId === sellerBizId || o.sellerBusinessName === currentUser?.business.name || currentUser?.isSeller
+    o => (sellerBizId && o.sellerId === sellerBizId) ||
+         (sellerBizName && o.sellerBusinessName === sellerBizName)
   );
 
   const sellerInquiries = inquiries.filter(
-    inq => inq.sellerId === sellerBizId || inq.sellerBusinessName === currentUser?.business.name || currentUser?.isSeller
+    inq => (sellerBizId && inq.sellerId === sellerBizId) ||
+           (sellerBizName && inq.sellerBusinessName === sellerBizName)
   );
 
   // Financial statistics

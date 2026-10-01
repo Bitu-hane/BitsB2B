@@ -18,6 +18,8 @@ import {
   LogIn,
   ShieldCheck,
   Briefcase,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -56,6 +58,7 @@ export const SignUpPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('+2519');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
 
@@ -281,15 +284,25 @@ export const SignUpPage: React.FC = () => {
                     <label className="block text-xs font-bold text-[#1E2128] uppercase tracking-wider mb-1.5">
                       {t('auth.passwordLabel')} *
                     </label>
-                    <input
-                      id="input-signup-password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={e => setPassword(e.target.value)}
-                      placeholder={t('auth.passwordPlaceholder')}
-                      className="w-full px-3.5 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
-                    />
+                    <div className="relative">
+                      <input
+                        id="input-signup-password"
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        placeholder={t('auth.passwordPlaceholder')}
+                        className="w-full pl-3.5 pr-10 py-2.5 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-sm font-medium text-[#1E2128] focus:outline-none focus:border-[#C08829]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#888] hover:text-[#1B2340] cursor-pointer transition-colors"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
 
                   <div>
