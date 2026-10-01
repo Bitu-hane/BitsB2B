@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { Product, StockStatus } from '../types';
-import { X, Plus, Trash2, CheckCircle2, Layers, Tag, DollarSign, Clock, Truck, AlertCircle, ShieldAlert } from 'lucide-react';
+import { X, Plus, Trash2, CheckCircle2, Layers, Tag, DollarSign, Clock, Truck, AlertCircle, ShieldAlert, FileText, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { processProductImage } from '../utils/imageUtils';
 
@@ -24,6 +24,7 @@ export const ProductEditModal: React.FC = () => {
   const [price, setPrice] = useState<number | ''>('');
   const [moq, setMoq] = useState<number | ''>('');
   const [unit, setUnit] = useState('');
+  const [status, setStatus] = useState<string>('published');
   const [stockStatus, setStockStatus] = useState<StockStatus | ''>('');
   const [stockQuantity, setStockQuantity] = useState<number | ''>('');
   const [leadTime, setLeadTime] = useState('');
@@ -43,6 +44,7 @@ export const ProductEditModal: React.FC = () => {
       setPrice(editingProduct.price);
       setMoq(editingProduct.moq);
       setUnit(editingProduct.unit);
+      setStatus(editingProduct.status || 'published');
       setStockStatus(editingProduct.stockStatus);
       setStockQuantity(editingProduct.stockQuantity);
       setLeadTime(editingProduct.leadTime);
@@ -59,7 +61,8 @@ export const ProductEditModal: React.FC = () => {
       setPrice('');
       setMoq('');
       setUnit('');
-      setStockStatus('');
+      setStatus('published');
+      setStockStatus('in_stock');
       setStockQuantity('');
       setLeadTime('');
       setImages([]);
@@ -111,8 +114,6 @@ export const ProductEditModal: React.FC = () => {
     setImages(current => {
       const selectedImage = current[index];
       if (!selectedImage || index === 0) return current;
-      // The primary product image is always index 0. Moving the selected image
-      // there automatically makes the former primary image a secondary image.
       return [selectedImage, ...current.filter((_, imageIndex) => imageIndex !== index)];
     });
   };
@@ -154,7 +155,8 @@ export const ProductEditModal: React.FC = () => {
         price: numericPrice,
         moq: numericMoq,
         unit,
-        stockStatus,
+        status,
+        stockStatus: stockStatus as StockStatus,
         stockQuantity: numericStockQuantity,
         leadTime,
         images,
@@ -179,6 +181,7 @@ export const ProductEditModal: React.FC = () => {
         priceTiers,
         moq: numericMoq,
         unit,
+        status,
         stockStatus: stockStatus as StockStatus,
         stockQuantity: numericStockQuantity,
         stockLastUpdated: 'Just now',
@@ -212,7 +215,7 @@ export const ProductEditModal: React.FC = () => {
     <AnimatePresence>
       <div
         id="product-edit-modal-backdrop"
-        className="fixed inset-0 z-50 bg-[#1B2340]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+        className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
         onClick={() => {
           setProductEditModalOpen(false);
           setEditingProduct(null);
@@ -224,20 +227,20 @@ export const ProductEditModal: React.FC = () => {
           exit={{ opacity: 0, scale: 0.96, y: 20 }}
           transition={{ duration: 0.2 }}
           onClick={e => e.stopPropagation()}
-          className="bg-[#FBF9F5] text-[#1B2340] rounded-2xl max-w-4xl w-full shadow-2xl border border-[#E2D9C8] overflow-hidden max-h-[92vh] flex flex-col"
+          className="bg-slate-50 text-slate-900 rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col"
         >
-          {/* Header */}
-          <div className="bg-[#1B2340] text-[#FBF9F5] px-6 py-5 border-b border-[#2E3A63] flex items-center justify-between shrink-0">
+          {/* Header - Sleek Executive Slate Navy */}
+          <div className="bg-[#1E293B] text-white px-6 py-5 border-b border-slate-700 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#C08829] flex items-center justify-center text-[#1B2340] font-bold shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold shadow-sm">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-serif text-lg font-bold text-[#FBF9F5] tracking-wide">
+                <h2 className="text-lg font-bold text-white tracking-wide">
                   {editingProduct ? 'Edit Catalog Listing' : 'Publish Wholesale Product'}
                 </h2>
-                <p className="text-xs text-[#94A3B8] mt-0.5">
-                  Configure B2B price tiers, MOQ, manual stock levels, and freight zones
+                <p className="text-xs text-slate-300 mt-0.5">
+                  Configure B2B price tiers, MOQ, manual stock levels, and publication status
                 </p>
               </div>
             </div>
@@ -246,54 +249,54 @@ export const ProductEditModal: React.FC = () => {
                 setProductEditModalOpen(false);
                 setEditingProduct(null);
               }}
-              className="text-[#94A3B8] hover:text-white hover:bg-white/10 p-2 rounded-xl transition-all cursor-pointer"
+              className="text-slate-400 hover:text-white hover:bg-slate-700 p-2 rounded-xl transition-all cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-[#FBF9F5] p-6 overflow-y-auto flex flex-col space-y-6 flex-1 text-xs">
-            {/* Subscription Limit / Validation Error Banner */}
+          <form onSubmit={handleSubmit} className="bg-slate-50 p-6 overflow-y-auto flex flex-col space-y-6 flex-1 text-xs">
+            {/* Validation Error Banner */}
             {errorMessage && (
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-amber-500/10 border border-[#C08829]/40 rounded-2xl p-4 flex items-start gap-3.5 text-[#1B2340]"
+                className="bg-amber-50 border border-amber-300 rounded-xl p-4 flex items-start gap-3 text-slate-900"
               >
-                <ShieldAlert className="w-5 h-5 text-[#C08829] shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <span className="font-bold text-sm text-[#1B2340] block">Action Required</span>
-                  <span className="text-xs text-[#524B40] block leading-relaxed">{errorMessage}</span>
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <span className="font-bold text-xs block">Action Required</span>
+                  <span className="text-xs text-slate-600 block leading-relaxed">{errorMessage}</span>
                 </div>
               </motion.div>
             )}
 
-            {/* SECTION 1: Product Photos & Visual Identity */}
-            <div className="bg-white rounded-2xl border border-[#E2D9C8] p-5 shadow-sm space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#F0EBE1]">
+            {/* SECTION 1: Product Photos & Visual Media */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
                 <div>
-                  <h3 className="font-serif text-sm font-bold text-[#1B2340] flex items-center gap-2">
-                    <Tag className="w-4 h-4 text-[#C08829]" />
-                    Product Photos & Visual Media <span className="text-[#C08829]">*</span>
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-teal-600" />
+                    Product Photos & Visual Media <span className="text-rose-500">*</span>
                   </h3>
-                  <p className="text-[11px] text-[#78716C] mt-0.5">
+                  <p className="text-[11px] text-slate-500 mt-0.5">
                     Upload up to 6 photos. The first image will be set as the primary catalog photo.
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-[#1B2340] bg-[#C08829]/15 border border-[#C08829]/30 px-2.5 py-1 rounded-full">
+                  <span className="text-[10px] font-bold text-slate-700 bg-slate-100 border border-slate-300 px-2.5 py-1 rounded-full">
                     {images.length}/6 Photos Uploaded
                   </span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-end">
-                <label className="block rounded-xl border-2 border-dashed border-[#D6CBB8] bg-[#FDFBF7] px-5 py-4 cursor-pointer hover:border-[#C08829] hover:bg-[#FAF7F2] transition-all group">
-                  <span className="flex items-center gap-2 text-xs font-bold text-[#1B2340] group-hover:text-[#C08829] transition-colors">
-                    <Plus className="w-4 h-4 text-[#C08829]" /> Choose photos from device
+                <label className="block rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-5 py-4 cursor-pointer hover:border-teal-600 hover:bg-slate-100 transition-all group">
+                  <span className="flex items-center gap-2 text-xs font-bold text-slate-900 group-hover:text-teal-700 transition-colors">
+                    <Plus className="w-4 h-4 text-teal-600" /> Choose photos from device
                   </span>
-                  <span className="mt-1 block text-[11px] text-[#78716C]">
+                  <span className="mt-1 block text-[11px] text-slate-500">
                     High quality JPG, PNG, or WEBP · 1:1 Aspect ratio canvas
                   </span>
                   <input
@@ -308,103 +311,98 @@ export const ProductEditModal: React.FC = () => {
                     }}
                   />
                 </label>
-                <div className="flex gap-2">
+
+                <div className="flex items-center gap-2">
                   <input
                     type="url"
                     value={imageUrlInput}
                     onChange={e => setImageUrlInput(e.target.value)}
                     placeholder="Paste image URL..."
-                    className="min-w-0 flex-1 px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-xs text-[#1B2340] focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                    className="px-3 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-teal-600 w-52 sm:w-64"
                   />
                   <button
                     type="button"
-                    disabled={!imageUrlInput || isProcessingImages}
-                    onClick={() => addImages([imageUrlInput])}
-                    className="px-4 py-2.5 bg-[#1B2340] disabled:opacity-40 text-white font-semibold text-xs rounded-xl hover:bg-[#2A3558] transition-all cursor-pointer shadow-sm"
+                    onClick={() => {
+                      if (imageUrlInput.trim()) addImages([imageUrlInput.trim()]);
+                    }}
+                    className="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition-colors cursor-pointer shrink-0"
                   >
                     Add URL
                   </button>
                 </div>
               </div>
 
-              {isProcessingImages && (
-                <p className="text-[11px] font-medium text-[#C08829] animate-pulse">
-                  Processing image canvas and optimization...
-                </p>
-              )}
-
+              {/* Image Previews */}
               {images.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2">
-                  {images.map((image, index) => (
+                <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 pt-2">
+                  {images.map((img, idx) => (
                     <div
-                      key={`${image.slice(0, 24)}-${index}`}
-                      className="group relative aspect-square overflow-hidden rounded-xl border border-[#E2D9C8] bg-[#FAF8F5] shadow-xs"
+                      key={idx}
+                      className="relative group bg-slate-100 rounded-xl border border-slate-200 overflow-hidden h-24 flex items-center justify-center"
                     >
-                      <img
-                        src={image}
-                        alt={`Product photo ${index + 1}`}
-                        className="w-full h-full object-contain p-1"
-                      />
-                      {index === 0 ? (
-                        <span className="absolute left-1.5 top-1.5 rounded-md bg-[#1B2340] px-2 py-0.5 text-[9px] font-bold text-[#FBF9F5] shadow-sm">
-                          Primary
+                      <img src={img} alt={`Product preview ${idx + 1}`} className="h-full object-contain" />
+                      {idx === 0 && (
+                        <span className="absolute top-1 left-1 bg-teal-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded shadow-xs">
+                          PRIMARY
                         </span>
-                      ) : (
+                      )}
+                      <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
+                        {idx !== 0 && (
+                          <button
+                            type="button"
+                            onClick={() => makePrimaryImage(idx)}
+                            className="bg-white text-slate-900 text-[10px] font-bold px-2 py-1 rounded shadow-xs hover:bg-slate-100 cursor-pointer"
+                          >
+                            Set Main
+                          </button>
+                        )}
                         <button
                           type="button"
-                          onClick={() => makePrimaryImage(index)}
-                          className="absolute inset-x-1.5 bottom-1.5 opacity-0 group-hover:opacity-100 focus:opacity-100 rounded-lg bg-[#1B2340]/95 px-2 py-1 text-[9px] font-bold text-white transition-opacity shadow-sm"
+                          onClick={() => setImages(current => current.filter((_, i) => i !== idx))}
+                          className="p-1 bg-rose-600 text-white rounded hover:bg-rose-700 cursor-pointer"
                         >
-                          Make primary
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => setImages(current => current.filter((_, imageIndex) => imageIndex !== index))}
-                        className="absolute right-1.5 top-1.5 rounded-md bg-white/95 p-1 text-[#64748B] hover:text-rose-600 shadow-sm transition-colors"
-                        aria-label={`Remove photo ${index + 1}`}
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* SECTION 2: Basic Product Information */}
-            <div className="bg-white rounded-2xl border border-[#E2D9C8] p-5 shadow-sm space-y-4">
-              <h3 className="font-serif text-sm font-bold text-[#1B2340] pb-2 border-b border-[#F0EBE1] flex items-center gap-2">
-                <Tag className="w-4 h-4 text-[#C08829]" />
-                Product Identification & Category
+            {/* SECTION 2: General Info & Publication Status */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-200">
+                <FileText className="w-4 h-4 text-teal-600" />
+                Product Identification & Status
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block font-semibold text-[#1B2340] mb-1.5">
-                    Product Name / Industrial Model <span className="text-[#C08829]">*</span>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Product Title / Name <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    placeholder="e.g. Three-Phase Industrial Water Pump 15kW"
-                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                    placeholder="e.g. Three-Phase 15kW Centrifugal Slurry Pump"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-[#1B2340] mb-1.5">
-                    Category (Loaded from Database) <span className="text-[#C08829]">*</span>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Category Vertical <span className="text-rose-500">*</span>
                   </label>
                   <select
                     required
                     value={categoryId}
                     onChange={e => setCategoryId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 cursor-pointer"
                   >
-                    <option value="" disabled>Select a category</option>
+                    <option value="">Select Category...</option>
                     {categories.map(c => (
                       <option key={c.id} value={c.id}>
                         {c.name}
@@ -414,155 +412,165 @@ export const ProductEditModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* Price, MOQ, Unit */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+              {/* Publication Status & Stock Status */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div>
-                  <label className="block font-semibold text-[#1B2340] mb-1.5">
-                    Unit Price (ETB) <span className="text-[#C08829]">*</span>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Marketplace Publication Status
                   </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      required
-                      min={1}
-                      value={price}
-                      onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                      placeholder="e.g. 45000"
-                      className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
-                    />
-                  </div>
+                  <select
+                    value={status}
+                    onChange={e => setStatus(e.target.value)}
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600 cursor-pointer"
+                  >
+                    <option value="published">🟢 Published (Live in Marketplace)</option>
+                    <option value="draft">📝 Save as Draft (Unpublished)</option>
+                    <option value="archived">📦 Archived (Hidden from Catalog)</option>
+                  </select>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-[#1B2340] mb-1.5">
-                    Minimum Order Qty (MOQ) <span className="text-[#C08829]">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min={1}
-                    value={moq}
-                    onChange={e => setMoq(e.target.value === '' ? '' : Number(e.target.value))}
-                    placeholder="e.g. 5"
-                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-[#1B2340] mb-1.5">
-                    Unit Measure <span className="text-[#C08829]">*</span>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Stock Level Indicator <span className="text-rose-500">*</span>
                   </label>
                   <select
                     required
-                    value={unit}
-                    onChange={e => setUnit(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                    value={stockStatus}
+                    onChange={e => setStockStatus(e.target.value as StockStatus)}
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 cursor-pointer"
                   >
-                    <option value="" disabled>Select unit</option>
-                    <option value="pieces">Pieces (pcs)</option>
-                    <option value="sets">Sets / Units</option>
-                    <option value="rolls">Rolls</option>
-                    <option value="cartons">Cartons / Boxes</option>
-                    <option value="metric tons">Metric Tons (MT)</option>
+                    <option value="in_stock">In Stock (Normal Production)</option>
+                    <option value="low_stock">Low Stock (Limited Batch)</option>
+                    <option value="out_of_stock">Out of Stock (Pre-order Only)</option>
                   </select>
                 </div>
               </div>
             </div>
 
-            {/* SECTION 3: Inventory & Dispatch Lead Time */}
-            <div className="bg-white rounded-2xl border border-[#E2D9C8] p-5 shadow-sm space-y-4">
-              <h3 className="font-serif text-sm font-bold text-[#1B2340] pb-2 border-b border-[#F0EBE1] flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#C08829]" />
-                Inventory &amp; Dispatch Availability
+            {/* SECTION 3: B2B Wholesale Pricing & Quantity */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-200">
+                <DollarSign className="w-4 h-4 text-teal-600" />
+                Wholesale Pricing, Unit & Inventory Quantity
               </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div>
-                  <label className="block font-semibold text-[#1B2340] mb-1.5">
-                    Stock Status <span className="text-[#C08829]">*</span>
-                  </label>
-                  <select
-                    required
-                    value={stockStatus}
-                    onChange={e => setStockStatus(e.target.value as StockStatus | '')}
-                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
-                  >
-                    <option value="" disabled>Select status</option>
-                    <option value="in_stock">In Stock</option>
-                    <option value="low_stock">Low Stock</option>
-                    <option value="out_of_stock">Out of Stock</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-[#1B2340] mb-1.5">
-                    Current Stock Quantity
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Unit Price (ETB) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
-                    value={stockQuantity}
-                    onChange={e => setStockQuantity(e.target.value === '' ? '' : Number(e.target.value))}
-                    placeholder="Available quantity..."
-                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                    min="0"
+                    required
+                    value={price}
+                    onChange={e => setPrice(e.target.value ? Number(e.target.value) : '')}
+                    placeholder="e.g. 2500"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-[#1B2340] mb-1.5">
-                    Dispatch Lead Time
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Minimum Order Quantity (MOQ) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={moq}
+                    onChange={e => setMoq(e.target.value ? Number(e.target.value) : '')}
+                    placeholder="e.g. 5"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-teal-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Unit Measurement <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={unit}
+                    onChange={e => setUnit(e.target.value)}
+                    placeholder="e.g. sets, pieces, rolls, kg"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Available Stock Qty
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={stockQuantity}
+                    onChange={e => setStockQuantity(e.target.value ? Number(e.target.value) : '')}
+                    placeholder="e.g. 250"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 4: Freight, Lead Time & Descriptions */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-200">
+                <Truck className="w-4 h-4 text-teal-600" />
+                Logistics & Description
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Estimated Production Lead Time
                   </label>
                   <input
                     type="text"
                     value={leadTime}
                     onChange={e => setLeadTime(e.target.value)}
                     placeholder="e.g. 2-4 business days"
-                    className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Delivery Regions (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={deliveryZones}
+                    onChange={e => setDeliveryZones(e.target.value)}
+                    placeholder="e.g. Addis Ababa, Oromia, Amhara, Sidama"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600"
                   />
                 </div>
               </div>
-            </div>
-
-            {/* SECTION 4: Freight, Specifications & Description */}
-            <div className="bg-white rounded-2xl border border-[#E2D9C8] p-5 shadow-sm space-y-4">
-              <h3 className="font-serif text-sm font-bold text-[#1B2340] pb-2 border-b border-[#F0EBE1] flex items-center gap-2">
-                <Truck className="w-4 h-4 text-[#C08829]" />
-                Freight, Logistics &amp; Specifications
-              </h3>
 
               <div>
-                <label className="block font-semibold text-[#1B2340] mb-1.5">
-                  Eligible Freight &amp; Delivery Zones (Comma Separated)
-                </label>
-                <input
-                  type="text"
-                  value={deliveryZones}
-                  onChange={e => setDeliveryZones(e.target.value)}
-                  placeholder="e.g. Addis Ababa Metro, Oromia, Hawassa IP, Dire Dawa"
-                  className="w-full px-3.5 py-2.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-[#1B2340] mb-1.5">
-                  Detailed Product Description &amp; Industrial Application
+                <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                  Product Overview & Technical Description
                 </label>
                 <textarea
                   rows={3}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="Describe material grading, performance capacity, assembly requirements..."
-                  className="w-full p-3.5 bg-[#FDFBF7] border border-[#E2D9C8] rounded-xl text-[#1B2340] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1B2340]/20 focus:border-[#1B2340]"
+                  className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-medium focus:outline-none focus:border-teal-600"
                 />
               </div>
 
-              {/* Dynamic Specifications Rows */}
-              <div className="p-4 bg-[#FAF8F5] rounded-xl border border-[#E2D9C8] space-y-3">
+              {/* Specs */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#1B2340] text-xs">Technical Specifications Sheet</span>
+                  <span className="font-bold text-slate-900 text-xs">Technical Specifications Sheet</span>
                   <button
                     type="button"
                     onClick={handleAddSpecRow}
-                    className="text-xs font-bold text-[#C08829] hover:text-[#1B2340] flex items-center gap-1 cursor-pointer transition-colors"
+                    className="text-xs font-bold text-teal-700 hover:text-teal-900 flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Spec Line
                   </button>
@@ -576,19 +584,19 @@ export const ProductEditModal: React.FC = () => {
                         value={s.key}
                         onChange={e => handleSpecChange(idx, 'key', e.target.value)}
                         placeholder="e.g. Voltage / Flow Rate"
-                        className="w-1/3 px-3 py-2 bg-white border border-[#E2D9C8] rounded-lg text-[#1B2340] text-xs focus:outline-none focus:border-[#1B2340]"
+                        className="w-1/3 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs focus:outline-none focus:border-teal-600"
                       />
                       <input
                         type="text"
                         value={s.value}
                         onChange={e => handleSpecChange(idx, 'value', e.target.value)}
                         placeholder="e.g. 380V 50Hz / 120 m3/h"
-                        className="flex-1 px-3 py-2 bg-white border border-[#E2D9C8] rounded-lg text-[#1B2340] text-xs focus:outline-none focus:border-[#1B2340]"
+                        className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs focus:outline-none focus:border-teal-600"
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveSpecRow(idx)}
-                        className="text-[#94A3B8] hover:text-rose-600 p-1.5 cursor-pointer transition-colors"
+                        className="text-slate-400 hover:text-rose-600 p-1.5 cursor-pointer transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -599,14 +607,14 @@ export const ProductEditModal: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="pt-4 border-t border-[#E2D9C8] flex items-center justify-end gap-3 shrink-0">
+            <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3 shrink-0">
               <button
                 type="button"
                 onClick={() => {
                   setProductEditModalOpen(false);
                   setEditingProduct(null);
                 }}
-                className="px-5 py-2.5 border border-[#1B2340]/20 hover:bg-[#1B2340]/5 font-semibold text-[#1B2340] rounded-xl transition-all cursor-pointer text-xs"
+                className="px-5 py-2.5 border border-slate-300 hover:bg-slate-200 font-semibold text-slate-700 rounded-xl transition-all cursor-pointer text-xs"
               >
                 Cancel
               </button>
@@ -614,7 +622,7 @@ export const ProductEditModal: React.FC = () => {
                 type="submit"
                 disabled={submitting}
                 id="btn-save-product-listing"
-                className="px-6 py-2.5 bg-[#1B2340] hover:bg-[#2A3558] text-[#FBF9F5] font-semibold text-xs rounded-xl transition-all cursor-pointer shadow-md flex items-center gap-2"
+                className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-md flex items-center gap-2 active:scale-95"
               >
                 {submitting ? (
                   <>
@@ -623,7 +631,7 @@ export const ProductEditModal: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-4 h-4 text-[#C08829]" />
+                    <CheckCircle2 className="w-4 h-4 text-white" />
                     {editingProduct ? 'Save Listing Changes' : 'Publish Product to Marketplace'}
                   </>
                 )}

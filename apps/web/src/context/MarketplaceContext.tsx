@@ -103,6 +103,7 @@ interface MarketplaceContextType {
   addProduct: (productData: Omit<Product, 'id' | 'createdAt'>) => Promise<{ success: boolean; message?: string; limitReached?: boolean; currentCount?: number; listingLimit?: number }>;
   updateProduct: (id: string, productData: Partial<Product>) => void;
   toggleProductStock: (productId: string, newStatus: StockStatus) => void;
+  updateProductStatus: (productId: string, status: string, stockStatus?: StockStatus) => Promise<void>;
   deleteProduct: (id: string) => void;
 
   // Inquiries (UC8)
@@ -770,6 +771,20 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   };
 
+  const updateProductStatus = async (productId: string, status: string, stockStatus?: StockStatus) => {
+    try {
+      const payload: any = { status };
+      if (stockStatus) payload.stockStatus = stockStatus;
+      await api.updateProduct(productId, payload);
+      await refreshProductsFromApi();
+    } catch (err) {
+      console.error('Failed to update product status:', err);
+      setProducts(prev =>
+        prev.map(p => (p.id === productId ? { ...p, status, stockStatus: stockStatus || p.stockStatus, stockLastUpdated: 'Just now' } : p))
+      );
+    }
+  };
+
   const deleteProduct = async (id: string) => {
     try {
       await api.deleteProduct(id);
@@ -1196,6 +1211,7 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
         addProduct,
         updateProduct,
         toggleProductStock,
+        updateProductStatus,
         deleteProduct,
         inquiries,
         createInquiry,
