@@ -1,4 +1,3 @@
-
 'use client';
 import React from 'react';
 import { useMarketplace } from '../context/MarketplaceContext';
@@ -19,6 +18,7 @@ export const MobileBottomNav: React.FC = () => {
     setAuthModalOpen,
     orders,
     inquiries,
+    t,
   } = useMarketplace();
 
   const unreadOrdersCount = orders.length;
@@ -40,7 +40,7 @@ export const MobileBottomNav: React.FC = () => {
         }`}
       >
         <Grid className="w-5 h-5" />
-        <span>Catalog</span>
+        <span>{t('common.navCatalog')}</span>
       </button>
 
       {/* 2. Orders & Escrow Tracking Tab */}
@@ -60,7 +60,7 @@ export const MobileBottomNav: React.FC = () => {
         }`}
       >
         <Package className="w-5 h-5" />
-        <span>Orders</span>
+        <span>{t('common.navOrders')}</span>
         {unreadOrdersCount > 0 && (
           <span className="absolute top-0.5 right-3 bg-[#D97706] text-white text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center border border-[#112225]">
             {unreadOrdersCount}
@@ -85,7 +85,7 @@ export const MobileBottomNav: React.FC = () => {
         }`}
       >
         <MessageSquare className="w-5 h-5" />
-        <span>Inquiries</span>
+        <span>{t('common.navInquiries')}</span>
         {activeInquiriesCount > 0 && (
           <span className="absolute top-0.5 right-3 bg-[#F59E0B] text-[#112225] text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center border border-[#112225]">
             {activeInquiriesCount}
@@ -125,7 +125,7 @@ export const MobileBottomNav: React.FC = () => {
           const staffRole = (currentUser as any)?.staffRole || (currentUser as any)?.staff_role;
           const isOperationalStaff = staffRole && staffRole !== 'SUPER_ADMIN';
           const isSellerHubEligible = !isOperationalStaff && (currentUser?.isSeller || currentUser?.business?.verificationStatus === 'verified' || currentUser?.business?.canSell || currentUser?.business?.role !== 'institutional buyer' || staffRole === 'SUPER_ADMIN');
-          return isSellerHubEligible ? 'Seller Hub' : (isOperationalStaff ? 'Staff Desk' : 'Account');
+          return isSellerHubEligible ? t('common.navSellerHub') : (isOperationalStaff ? 'Staff Desk' : 'Account');
         })()}</span>
       </button>
     </nav>

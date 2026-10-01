@@ -36,6 +36,7 @@ export const SellerDashboard: React.FC = () => {
     advanceOrderStatus,
     replyToInquiry,
     setSelectedProduct,
+    t,
   } = useMarketplace();
 
   const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'inquiries'>('products');
@@ -99,16 +100,16 @@ export const SellerDashboard: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-serif text-[21px] font-semibold tracking-tight">
-                  {currentUser?.business.name || 'Supplier Control Center'}
+                  {currentUser?.business.name || t('dashboard.supplierControlCenter')}
                 </h1>
                 {currentUser?.business.verificationStatus === 'verified' && (
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#D97706] bg-[#FEF3C7]/15 border border-[#D97706]/40 px-2 py-0.5 rounded-full">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Verified Supplier
+                    <ShieldCheck className="w-3.5 h-3.5" /> {t('dashboard.verifiedSupplier')}
                   </span>
                 )}
               </div>
               <p className="text-xs text-[#A7AECB] mt-0.5">
-                Role: <strong className="capitalize text-[#F2DFAE]">{currentUser?.business.role || 'Producer'}</strong> &bull; Region: {currentUser?.business.region || 'Addis Ababa'}
+                Role: <strong className="capitalize text-[#F2DFAE]">{currentUser?.business.role || t('dashboard.producer')}</strong> &bull; Region: {currentUser?.business.region || 'Addis Ababa'}
               </p>
             </div>
           </div>
@@ -120,7 +121,7 @@ export const SellerDashboard: React.FC = () => {
           className="px-4 py-2.5 bg-[#C08829] hover:bg-[#9C6B1A] text-[#1B2340] hover:text-white font-bold text-xs rounded-[8px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md"
         >
           <Plus className="w-4 h-4" />
-          <span>Add New Product Listing</span>
+          <span>{t('dashboard.addNewProduct')}</span>
         </button>
       </div>
 
@@ -128,37 +129,37 @@ export const SellerDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 bg-white rounded-[11px] border border-[#E2E4EA] shadow-xs">
           <span className="text-[11px] font-semibold text-[#888] uppercase tracking-wider block">
-            Published Catalog Listings
+            {t('dashboard.activeListings')}
           </span>
           <div className="text-2xl font-black text-[#112225] mt-1">
-            {sellerProducts.length} <span className="text-xs font-normal text-[#6E685F]">Active Items</span>
+            {sellerProducts.length} <span className="text-xs font-normal text-[#6E685F]">{t('dashboard.activeItems')}</span>
           </div>
         </div>
 
         <div className="p-4 bg-white rounded-[11px] border border-[#E2E4EA] shadow-xs">
           <span className="text-[11px] font-semibold text-[#888] uppercase tracking-wider block">
-            Orders Requiring Dispatch
+            {t('dashboard.ordersDispatch')}
           </span>
           <div className="text-2xl font-black text-[#C85A32] mt-1">
-            {pendingFulfillmentCount} <span className="text-xs font-normal text-[#6E685F]">Pending</span>
+            {pendingFulfillmentCount} <span className="text-xs font-normal text-[#6E685F]">{t('dashboard.pendingOrders')}</span>
           </div>
         </div>
 
         <div className="p-4 bg-white rounded-[11px] border border-[#E2E4EA] shadow-xs">
           <span className="text-[11px] font-semibold text-[#888] uppercase tracking-wider block">
-            Unanswered RFQ Inquiries
+            {t('dashboard.unansweredInquiries')}
           </span>
           <div className="text-2xl font-black text-[#92400E] mt-1">
-            {pendingInquiriesCount} <span className="text-xs font-normal text-[#6E685F]">New Inquiries</span>
+            {pendingInquiriesCount} <span className="text-xs font-normal text-[#6E685F]">{t('dashboard.newInquiries')}</span>
           </div>
         </div>
 
         <div className="p-4 bg-white rounded-[11px] border border-[#E2E4EA] shadow-xs">
           <span className="text-[11px] font-semibold text-[#888] uppercase tracking-wider block">
-            Total Sales (Escrow Volume)
+            {t('dashboard.totalSales')}
           </span>
           <div className="text-2xl font-black text-[#112225] mt-1">
-            {totalSalesVolume.toLocaleString()} <span className="text-xs font-normal text-[#6E685F]">ETB</span>
+            {totalSalesVolume.toLocaleString()} <span className="text-xs font-normal text-[#6E685F]">{t('common.currency')}</span>
           </div>
         </div>
       </div>
@@ -175,7 +176,7 @@ export const SellerDashboard: React.FC = () => {
           }`}
         >
           <Layers className="w-4 h-4" />
-          <span>Product Catalog &amp; Stock Toggles ({sellerProducts.length})</span>
+          <span>{t('dashboard.productCatalogTab')} ({sellerProducts.length})</span>
         </button>
 
         <button
@@ -188,7 +189,7 @@ export const SellerDashboard: React.FC = () => {
           }`}
         >
           <Package className="w-4 h-4" />
-          <span>Incoming Orders &amp; Fulfillment ({sellerOrders.length})</span>
+          <span>{t('dashboard.incomingOrdersTab')} ({sellerOrders.length})</span>
         </button>
 
         <button
@@ -201,7 +202,7 @@ export const SellerDashboard: React.FC = () => {
           }`}
         >
           <MessageSquare className="w-4 h-4" />
-          <span>Structured Inquiries Inbox ({sellerInquiries.length})</span>
+          <span>{t('dashboard.inquiriesInboxTab')} ({sellerInquiries.length})</span>
         </button>
       </div>
 
@@ -210,7 +211,7 @@ export const SellerDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl border border-[#E5DFD5] shadow-xs overflow-hidden">
           <div className="p-4 bg-[#FAF7F2] border-b border-[#E5DFD5] flex items-center">
             <span className="text-xs font-bold text-[#112225]">
-              Catalog Listings with Manual Stock Management
+              {t('dashboard.manualStockTitle')}
             </span>
           </div>
 
@@ -218,12 +219,12 @@ export const SellerDashboard: React.FC = () => {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-[#F3EFE6] border-b border-[#E5DFD5] text-[#6E685F] uppercase font-semibold text-[10px]">
-                  <th className="py-3 px-4">Product Details</th>
-                  <th className="py-3 px-3">Wholesale Price / MOQ</th>
-                  <th className="py-3 px-3">Stock Status Toggle</th>
-                  <th className="py-3 px-3">Available Qty</th>
-                  <th className="py-3 px-3">Lead Time</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">{t('dashboard.tableProductDetails')}</th>
+                  <th className="py-3 px-3">{t('dashboard.tableWholesalePrice')}</th>
+                  <th className="py-3 px-3">{t('dashboard.tableStockToggle')}</th>
+                  <th className="py-3 px-3">{t('dashboard.tableAvailableQty')}</th>
+                  <th className="py-3 px-3">{t('dashboard.tableLeadTime')}</th>
+                  <th className="py-3 px-4 text-right">{t('dashboard.tableActions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#EFEAE0]">
@@ -256,11 +257,11 @@ export const SellerDashboard: React.FC = () => {
                         {prod.price.toLocaleString()} {prod.currency} <span className="font-normal text-[#888]">/ {prod.unit}</span>
                       </div>
                       <div className="text-[11px] text-[#6E685F]">
-                        MOQ: <strong>{prod.moq} {prod.unit}</strong>
+                        {t('catalog.moqLabel')}: <strong>{prod.moq} {prod.unit}</strong>
                       </div>
                     </td>
 
-                    {/* Manual Stock Status Toggle (UC15) */}
+                    {/* Manual Stock Status Toggle */}
                     <td className="py-3 px-3">
                       <select
                         id={`stock-select-${prod.id}`}
@@ -274,9 +275,9 @@ export const SellerDashboard: React.FC = () => {
                             : 'bg-[#E5DFD5] border-[#888] text-[#555]'
                         }`}
                       >
-                        <option value="in_stock">In Stock</option>
-                        <option value="low_stock">Low Stock</option>
-                        <option value="out_of_stock">Out of Stock</option>
+                        <option value="in_stock">{t('dashboard.inStock')}</option>
+                        <option value="low_stock">{t('dashboard.lowStock')}</option>
+                        <option value="out_of_stock">{t('dashboard.outOfStock')}</option>
                       </select>
                       <div className="text-[10px] text-[#888] mt-0.5">
                         {prod.stockLastUpdated}
@@ -331,7 +332,7 @@ export const SellerDashboard: React.FC = () => {
         <div className="space-y-4">
           {sellerOrders.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-2xl border border-[#E5DFD5] text-xs text-[#888]">
-              No sales orders received yet.
+              {t('dashboard.noOrders')}
             </div>
           ) : (
             sellerOrders.map(order => (
@@ -342,7 +343,7 @@ export const SellerDashboard: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#EFEAE0]">
                   <div>
                     <div className="flex items-center gap-2">
-                      <strong className="text-sm text-[#112225]">Order #{order.orderNumber}</strong>
+                      <strong className="text-sm text-[#112225]">{t('orders.orderNumber')}{order.orderNumber}</strong>
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${
                           order.status === 'delivered'
@@ -350,11 +351,11 @@ export const SellerDashboard: React.FC = () => {
                             : 'bg-[#FEF3C7] text-[#92400E]'
                         }`}
                       >
-                        Status: {order.status}
+                        {t('dashboard.status')}: {order.status}
                       </span>
                     </div>
                     <div className="text-[11px] text-[#6E685F] mt-0.5">
-                      Buyer: <strong className="text-[#112225]">{order.buyerBusinessName}</strong> ({order.buyerName}) &bull; {order.buyerPhone}
+                      {t('dashboard.buyer')}: <strong className="text-[#112225]">{order.buyerBusinessName}</strong> ({order.buyerName}) &bull; {order.buyerPhone}
                     </div>
                   </div>
 
@@ -363,7 +364,7 @@ export const SellerDashboard: React.FC = () => {
                       {order.totalAmount.toLocaleString()} {order.currency}
                     </div>
                     <div className="text-[10px] text-[#92400E] font-medium">
-                      Escrow: {order.escrowStatus.toUpperCase()} ({order.paymentMethod === 'telebirr' ? 'Telebirr' : 'CBE Birr'})
+                      {t('dashboard.escrow')}: {order.escrowStatus.toUpperCase()} ({order.paymentMethod === 'telebirr' ? 'Telebirr' : 'CBE Birr'})
                     </div>
                   </div>
                 </div>
@@ -390,7 +391,7 @@ export const SellerDashboard: React.FC = () => {
 
                 {/* Delivery Location */}
                 <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#E5DFD5]">
-                  <span className="font-bold text-[#112225] block mb-0.5">Destination Warehouse:</span>
+                  <span className="font-bold text-[#112225] block mb-0.5">{t('dashboard.destinationWarehouse')}:</span>
                   <div className="text-[#6E685F]">
                     {order.deliveryAddress.landmark}, {order.deliveryAddress.subcity}, {order.deliveryAddress.city}, {order.deliveryAddress.region}
                   </div>
@@ -411,7 +412,7 @@ export const SellerDashboard: React.FC = () => {
                         onClick={() => advanceOrderStatus(order.id, 'confirmed')}
                         className="px-4 py-2 bg-[#C85A32] hover:bg-[#A34320] text-white font-bold rounded-xl transition-colors cursor-pointer"
                       >
-                        Confirm Order &rarr;
+                        {t('dashboard.confirmOrder')} &rarr;
                       </button>
                     )}
 
@@ -421,7 +422,7 @@ export const SellerDashboard: React.FC = () => {
                         className="px-4 py-2 bg-[#C85A32] hover:bg-[#A34320] text-white font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
                       >
                         <Truck className="w-3.5 h-3.5" />
-                        <span>Dispatch &amp; Mark Shipped &rarr;</span>
+                        <span>{t('dashboard.dispatchMarkShipped')} &rarr;</span>
                       </button>
                     )}
                   </div>
@@ -437,7 +438,7 @@ export const SellerDashboard: React.FC = () => {
         <div className="space-y-4">
           {sellerInquiries.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-2xl border border-[#E5DFD5] text-xs text-[#888]">
-              No structured inquiries received yet.
+              {t('dashboard.noInquiries')}
             </div>
           ) : (
             sellerInquiries.map(inq => (
@@ -456,7 +457,7 @@ export const SellerDashboard: React.FC = () => {
                     <div>
                       <div className="font-bold text-sm text-[#112225]">{inq.productName}</div>
                       <div className="text-[11px] text-[#6E685F]">
-                        Buyer: <strong className="text-[#112225]">{inq.buyerBusinessName}</strong> ({inq.buyerPhone})
+                        {t('dashboard.buyer')}: <strong className="text-[#112225]">{inq.buyerBusinessName}</strong> ({inq.buyerPhone})
                       </div>
                     </div>
                   </div>
@@ -469,7 +470,7 @@ export const SellerDashboard: React.FC = () => {
                           : 'bg-[#FEF3C7] text-[#92400E] border border-[#FCD34D]'
                       }`}
                     >
-                      {inq.status === 'answered' ? 'Answered' : 'Awaiting Reply'}
+                      {inq.status === 'answered' ? t('dashboard.answered') : t('dashboard.awaitingReply')}
                     </span>
                     <div className="text-[10px] text-[#888] mt-1">Topic: {inq.topic.toUpperCase()}</div>
                   </div>
@@ -485,7 +486,7 @@ export const SellerDashboard: React.FC = () => {
                       }`}
                     >
                       <div className="flex justify-between text-[11px] font-bold text-[#112225] mb-1">
-                        <span>{m.senderBusiness} ({m.isSeller ? 'You / Seller' : 'Buyer'})</span>
+                        <span>{m.senderBusiness} ({m.isSeller ? 'You / Seller' : t('dashboard.buyer')})</span>
                         <span className="text-[#888] font-normal">{m.timestamp}</span>
                       </div>
                       <p className="text-[#162C30] leading-relaxed">{m.text}</p>
@@ -501,7 +502,7 @@ export const SellerDashboard: React.FC = () => {
                     onChange={e =>
                       setInquiryReplyText(prev => ({ ...prev, [inq.id]: e.target.value }))
                     }
-                    placeholder="Type official seller quotation or technical answer..."
+                    placeholder={t('dashboard.typeReplyPlaceholder')}
                     className="flex-1 px-3 py-2 bg-[#F7F4EE] border border-[#D8CFBF] rounded-xl text-xs text-[#112225] focus:outline-none focus:border-[#C85A32]"
                   />
                   <button
@@ -509,7 +510,7 @@ export const SellerDashboard: React.FC = () => {
                     className="px-4 py-2 bg-[#C85A32] hover:bg-[#A34320] text-white font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>Send Answer</span>
+                    <span>{t('dashboard.sendAnswer')}</span>
                   </button>
                 </div>
               </div>

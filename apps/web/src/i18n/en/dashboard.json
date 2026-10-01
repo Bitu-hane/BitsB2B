@@ -23,5 +23,20 @@
   "lowStock": "Low Stock",
   "outOfStock": "Out of Stock",
   "subscriptionLimitBanner": "Free Plan Listing Limit Reached",
-  "upgradeSubscription": "Upgrade Plan"
+  "upgradeSubscription": "Upgrade Plan",
+  "verifiedSupplier": "Verified Supplier",
+  "supplierControlCenter": "Supplier Control Center",
+  "producer": "Producer",
+  "confirmOrder": "Confirm Order",
+  "dispatchMarkShipped": "Dispatch & Mark Shipped",
+  "noOrders": "No sales orders received yet.",
+  "noInquiries": "No structured inquiries received yet.",
+  "answered": "Answered",
+  "awaitingReply": "Awaiting Reply",
+  "typeReplyPlaceholder": "Type official seller quotation or technical answer...",
+  "sendAnswer": "Send Answer",
+  "destinationWarehouse": "Destination Warehouse",
+  "buyer": "Buyer",
+  "status": "Status",
+  "escrow": "Escrow"
 }

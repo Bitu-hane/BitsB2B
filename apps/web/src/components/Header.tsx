@@ -33,6 +33,9 @@ export const Header: React.FC = () => {
     resetToDefaults,
     searchQuery,
     setSearchQuery,
+    language,
+    setLanguage,
+    t,
   } = useMarketplace();
 
   const [roleSwitcherOpen, setRoleSwitcherOpen] = useState(false);
@@ -71,6 +74,34 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Header Language Switcher */}
+            <div className="flex items-center gap-1 bg-[#131A30] p-0.5 rounded-lg border border-[#2B3558]">
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                  language === 'en'
+                    ? 'bg-[#C08829] text-[#1B2340] shadow-xs'
+                    : 'text-[#A7AECB] hover:text-white'
+                }`}
+              >
+                <span>🇬🇧</span>
+                <span>EN</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('am')}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                  language === 'am'
+                    ? 'bg-[#C08829] text-[#1B2340] shadow-xs'
+                    : 'text-[#A7AECB] hover:text-white'
+                }`}
+              >
+                <span>🇪🇹</span>
+                <span>አማ</span>
+              </button>
+            </div>
+
             <span className="font-mono text-xs text-[#F4EFE3]">ETB &mdash; Ethiopian Birr</span>
             <span className="text-[#F4EFE3]/30">|</span>
 
@@ -180,7 +211,7 @@ export const Header: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search products, specs, machinery model, packaging…"
+              placeholder={t('catalog.searchPlaceholder')}
               className="flex-1 border-none bg-transparent px-4.5 py-3 text-[14.5px] text-[#1E2128] font-sans focus:outline-none placeholder:text-[#6B7078]"
             />
             <button
@@ -191,7 +222,7 @@ export const Header: React.FC = () => {
                 <circle cx="11" cy="11" r="7" />
                 <path d="m21 21-4.3-4.3" />
               </svg>
-              <span>Search</span>
+              <span>{language === 'am' ? 'ፈልግ' : 'Search'}</span>
             </button>
           </div>
 
@@ -211,7 +242,7 @@ export const Header: React.FC = () => {
                   </span>
                 )}
               </div>
-              <span>Cart</span>
+              <span>{t('common.navOrders')}</span>
             </button>
 
             {/* Inquiries Icon */}
@@ -228,7 +259,7 @@ export const Header: React.FC = () => {
                   </span>
                 )}
               </div>
-              <span>Inquiries</span>
+              <span>{t('common.navInquiries')}</span>
             </button>
 
             {/* Alerts Icon */}
@@ -245,7 +276,7 @@ export const Header: React.FC = () => {
                   </span>
                 )}
               </div>
-              <span>Alerts</span>
+              <span>{t('common.notifications')}</span>
             </button>
 
             {/* Account User Avatar & Info */}
@@ -299,7 +330,7 @@ export const Header: React.FC = () => {
                     className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center gap-2"
                   >
                     <Package className="w-3.5 h-3.5 text-[#C08829]" />
-                    <span>Orders & Escrow</span>
+                    <span>{t('common.navOrders')}</span>
                   </button>
 
                   <button
@@ -310,7 +341,7 @@ export const Header: React.FC = () => {
                     className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center gap-2"
                   >
                     <MessageSquare className="w-3.5 h-3.5 text-[#C08829]" />
-                    <span>Inquiries Inbox</span>
+                    <span>{t('common.navInquiries')}</span>
                   </button>
 
                   {currentUser.isSeller && (
@@ -322,7 +353,7 @@ export const Header: React.FC = () => {
                       className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center gap-2 text-[#C08829] font-semibold"
                     >
                       <Store className="w-3.5 h-3.5" />
-                      <span>Seller Hub</span>
+                      <span>{t('common.navSellerHub')}</span>
                     </button>
                   )}
 
@@ -335,7 +366,7 @@ export const Header: React.FC = () => {
                       className="w-full text-left px-4 py-2 text-[#A6432B] hover:bg-white/10 flex items-center gap-2 font-semibold"
                     >
                       <LogOut className="w-3.5 h-3.5" />
-                      <span>Sign Out</span>
+                      <span>{t('auth.logout')}</span>
                     </button>
                   </div>
                 </div>
@@ -348,7 +379,7 @@ export const Header: React.FC = () => {
         <div className="flex items-center gap-2.5 flex-wrap mt-4 text-[13px] text-[#A7AECB]">
           <div className="flex items-center gap-1.5">
             <span className="text-[#C08829]">★</span>
-            <span>Frequently searched:</span>
+            <span>{language === 'am' ? 'በተደጋጋሚ የተፈለጉ፡' : 'Frequently searched:'}</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             {freqSearches.map(tag => (

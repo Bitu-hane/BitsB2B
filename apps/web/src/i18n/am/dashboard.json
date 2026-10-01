@@ -23,5 +23,20 @@
   "lowStock": "አነስተኛ",
   "outOfStock": "ያለቀ",
   "subscriptionLimitBanner": "የነፃ እቅድ የምርት ገደብ ደርሰዋል",
-  "upgradeSubscription": "እቅድ ያሻሽሉ"
+  "upgradeSubscription": "እቅድ ያሻሽሉ",
+  "verifiedSupplier": "የተረጋገጠ አቅራቢ",
+  "supplierControlCenter": "የአቅራቢዎች መቆጣጠሪያ ማዕከል",
+  "producer": "አምራች",
+  "confirmOrder": "ትእዛዝ አረጋግጥ",
+  "dispatchMarkShipped": "እቃውን ላክ እና ተልኳል በል",
+  "noOrders": "እስካሁን ምንም የተላከ ትእዛዝ የለም።",
+  "noInquiries": "እስካሁን ምንም የመጣ የዋጋ ጥያቄ የለም።",
+  "answered": "ተመልሷል",
+  "awaitingReply": "መልስ በመጠባበቅ ላይ",
+  "typeReplyPlaceholder": "የዋጋ ወይም የቴክኒክ መልስ እዚህ ይጻፉ...",
+  "sendAnswer": "መልስ ላክ",
+  "destinationWarehouse": "የማድረሻ አድራሻ",
+  "buyer": "ገዢ",
+  "status": "ሁኔታ",
+  "escrow": "እስክሮው"
 }
