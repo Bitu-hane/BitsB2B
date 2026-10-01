@@ -414,19 +414,18 @@ export interface AppProps {
   defaultAuthView?: 'login' | 'signup' | 'marketplace';
 }
 
-const MainApp: React.FC<{ defaultView?: any; defaultAuthView?: any }> = ({ defaultView, defaultAuthView }) => {
-  const { currentUser, authView, setViewingView, setAuthView } = useMarketplace();
+const MainApp: React.FC<{ defaultView?: any; defaultAuthView?: any }> = ({ defaultView }) => {
+  const { currentUser, authView, setViewingView } = useMarketplace();
 
   React.useEffect(() => {
     if (defaultView) setViewingView(defaultView);
-    if (defaultAuthView) setAuthView(defaultAuthView);
-  }, [defaultView, defaultAuthView, setViewingView, setAuthView]);
+  }, [defaultView, setViewingView]);
 
   if (!currentUser && authView === 'signup') {
     return <SignUpPage />;
   }
 
-  if (!currentUser || authView === 'login') {
+  if (!currentUser) {
     return <LoginPage />;
   }
 
@@ -434,11 +433,17 @@ const MainApp: React.FC<{ defaultView?: any; defaultAuthView?: any }> = ({ defau
 };
 
 export function App({ defaultView, defaultAuthView }: AppProps = {}) {
-  return (
-    <MarketplaceProvider>
-      <MainApp defaultView={defaultView} defaultAuthView={defaultAuthView} />
-    </MarketplaceProvider>
-  );
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  return <MainApp defaultView={defaultView} defaultAuthView={defaultAuthView} />;
 }
 
 export default App;

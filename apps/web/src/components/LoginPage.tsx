@@ -163,7 +163,7 @@ export const LoginPage: React.FC = () => {
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-[#C08829]" />
-                    <span>Checking Database...</span>
+                    <span>Verifying Account &amp; Credentials...</span>
                   </>
                 ) : (
                   <>

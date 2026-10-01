@@ -227,28 +227,32 @@ const ToastSingleItem: React.FC<{ toast: ToastItem; onClose: () => void }> = ({ 
 
   const config = {
     success: {
-      border: 'border-l-4 border-l-[#33553A] border-[#E2E4EA]',
-      iconBg: 'bg-[#33553A]/15 text-[#33553A]',
+      border: 'border-l-4 border-l-emerald-600 border-slate-200',
+      iconBg: 'bg-emerald-50 text-emerald-700',
       icon: CheckCircle2,
       badge: 'Success',
+      progressBg: 'bg-emerald-600',
     },
     error: {
-      border: 'border-l-4 border-l-[#A6432B] border-[#E2E4EA]',
-      iconBg: 'bg-[#F3DBCF] text-[#A6432B]',
+      border: 'border-l-4 border-l-rose-600 border-slate-200',
+      iconBg: 'bg-rose-50 text-rose-700',
       icon: AlertCircle,
       badge: 'Notice',
+      progressBg: 'bg-rose-600',
     },
     warning: {
-      border: 'border-l-4 border-l-[#C08829] border-[#E2E4EA]',
-      iconBg: 'bg-[#F2DFAE] text-[#1B2340]',
+      border: 'border-l-4 border-l-amber-500 border-slate-200',
+      iconBg: 'bg-amber-50 text-amber-700',
       icon: AlertTriangle,
       badge: 'Warning',
+      progressBg: 'bg-amber-500',
     },
     info: {
-      border: 'border-l-4 border-l-[#1B2340] border-[#E2E4EA]',
-      iconBg: 'bg-[#1B2340]/10 text-[#1B2340]',
+      border: 'border-l-4 border-l-teal-600 border-slate-200',
+      iconBg: 'bg-teal-50 text-teal-700',
       icon: Info,
       badge: 'Info',
+      progressBg: 'bg-teal-600',
     },
   }[item.type];
 
@@ -260,26 +264,26 @@ const ToastSingleItem: React.FC<{ toast: ToastItem; onClose: () => void }> = ({ 
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9, y: -10 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
-      className={`pointer-events-auto w-full bg-[#FFFFFF] ${config.border} rounded-xl p-4 shadow-xl border relative overflow-hidden flex items-start gap-3.5 text-[#1E2128] font-sans`}
+      className={`pointer-events-auto w-full bg-white ${config.border} rounded-xl p-4 shadow-xl border relative overflow-hidden flex items-start gap-3.5 text-slate-900 font-sans`}
     >
-      <div className={`w-8 h-8 rounded-lg ${config.iconBg} flex items-center justify-center shrink-0 mt-0.5`}>
+      <div className={`w-8 h-8 rounded-lg ${config.iconBg} flex items-center justify-center shrink-0 mt-0.5 shadow-xs`}>
         <IconComp className="w-4 h-4" />
       </div>
 
       <div className="flex-1 min-w-0 pr-4">
         {item.title && (
-          <h4 className="font-serif font-semibold text-xs text-[#1E2128] mb-0.5 tracking-tight">
+          <h4 className="font-bold text-xs text-slate-900 mb-0.5 tracking-tight">
             {item.title}
           </h4>
         )}
-        <p className="text-xs text-[#4A505C] leading-snug break-words">
+        <p className="text-xs text-slate-600 leading-snug break-words">
           {item.message}
         </p>
       </div>
 
       <button
         onClick={onClose}
-        className="text-[#98A0B3] hover:text-[#1E2128] transition-colors p-1 rounded-md cursor-pointer shrink-0"
+        className="text-slate-400 hover:text-slate-800 transition-colors p-1 rounded-md cursor-pointer shrink-0"
       >
         <X className="w-3.5 h-3.5" />
       </button>
@@ -289,15 +293,7 @@ const ToastSingleItem: React.FC<{ toast: ToastItem; onClose: () => void }> = ({ 
         initial={{ scaleX: 1 }}
         animate={{ scaleX: 0 }}
         transition={{ duration: (item.duration || 4000) / 1000, ease: 'linear' }}
-        className={`absolute bottom-0 left-0 right-0 h-0.5 origin-left ${
-          item.type === 'error'
-            ? 'bg-[#A6432B]'
-            : item.type === 'warning'
-            ? 'bg-[#C08829]'
-            : item.type === 'success'
-            ? 'bg-[#33553A]'
-            : 'bg-[#1B2340]'
-        }`}
+        className={`absolute bottom-0 left-0 right-0 h-0.5 origin-left ${config.progressBg}`}
       />
     </motion.div>
   );

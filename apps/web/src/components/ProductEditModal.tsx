@@ -21,6 +21,8 @@ export const ProductEditModal: React.FC = () => {
 
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [brand, setBrand] = useState('');
+  const [originCountry, setOriginCountry] = useState('Ethiopia');
   const [price, setPrice] = useState<number | ''>('');
   const [moq, setMoq] = useState<number | ''>('');
   const [unit, setUnit] = useState('');
@@ -28,6 +30,10 @@ export const ProductEditModal: React.FC = () => {
   const [stockStatus, setStockStatus] = useState<StockStatus | ''>('');
   const [stockQuantity, setStockQuantity] = useState<number | ''>('');
   const [leadTime, setLeadTime] = useState('');
+  const [deliveryMode, setDeliveryMode] = useState<'range' | 'date'>('range');
+  const [minLeadDays, setMinLeadDays] = useState<number | ''>(2);
+  const [maxLeadDays, setMaxLeadDays] = useState<number | ''>(5);
+  const [targetDeliveryDate, setTargetDeliveryDate] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [isProcessingImages, setIsProcessingImages] = useState(false);
@@ -182,10 +188,19 @@ export const ProductEditModal: React.FC = () => {
       return;
     }
 
+    let computedLeadTime = leadTime.trim();
+    if (deliveryMode === 'range' && minLeadDays !== '' && maxLeadDays !== '') {
+      computedLeadTime = `${minLeadDays} to ${maxLeadDays} business days`;
+    } else if (deliveryMode === 'date' && targetDeliveryDate) {
+      computedLeadTime = `Target Delivery Date: ${targetDeliveryDate}`;
+    }
+
     const numericPrice = Number(price);
     const numericMoq = Number(moq);
     const numericStockQuantity = Number(stockQuantity) || 0;
     const parsedSpecs: Record<string, string> = {};
+    if (brand.trim()) parsedSpecs['Brand / Manufacturer'] = brand.trim();
+    if (originCountry.trim()) parsedSpecs['Origin Country'] = originCountry.trim();
     specs.forEach(s => {
       if (s.key.trim() && s.value.trim()) {
         parsedSpecs[s.key.trim()] = s.value.trim();
@@ -210,7 +225,7 @@ export const ProductEditModal: React.FC = () => {
         status,
         stockStatus: stockStatus as StockStatus,
         stockQuantity: numericStockQuantity,
-        leadTime,
+        leadTime: computedLeadTime,
         images,
         description,
         deliveryZones: parsedZones.length > 0 ? parsedZones : editingProduct.deliveryZones,
@@ -237,7 +252,7 @@ export const ProductEditModal: React.FC = () => {
         stockStatus: stockStatus as StockStatus,
         stockQuantity: numericStockQuantity,
         stockLastUpdated: 'Just now',
-        leadTime,
+        leadTime: computedLeadTime,
         deliveryZones: parsedZones,
         images,
         description,
@@ -446,7 +461,7 @@ export const ProductEditModal: React.FC = () => {
 
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-                    Category (Loaded from Database) <span className="text-rose-500">*</span>
+                    Category (Level 3 Hierarchy) <span className="text-rose-500">*</span>
                   </label>
                   <select
                     required
@@ -466,6 +481,42 @@ export const ProductEditModal: React.FC = () => {
                         ))}
                       </optgroup>
                     ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Brand & Origin Country */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Brand / Manufacturer Name
+                  </label>
+                  <input
+                    type="text"
+                    value={brand}
+                    onChange={e => setBrand(e.target.value)}
+                    placeholder="e.g. Ethio-Steel / Caterpillar / SinoMach"
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                    Country of Origin
+                  </label>
+                  <select
+                    value={originCountry}
+                    onChange={e => setOriginCountry(e.target.value)}
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white cursor-pointer"
+                  >
+                    <option value="Ethiopia">Ethiopia (Local Produce)</option>
+                    <option value="China">China</option>
+                    <option value="Germany">Germany</option>
+                    <option value="Turkey">Turkey</option>
+                    <option value="India">India</option>
+                    <option value="UAE">United Arab Emirates</option>
+                    <option value="USA">United States</option>
+                    <option value="Other">Other International</option>
                   </select>
                 </div>
               </div>
@@ -497,7 +548,7 @@ export const ProductEditModal: React.FC = () => {
                     onChange={e => setStockStatus(e.target.value as StockStatus)}
                     className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white cursor-pointer"
                   >
-                    <option value="in_stock" className="bg-white text-emerald-800">In Stock (Live from DB)</option>
+                    <option value="in_stock" className="bg-white text-emerald-800">In Stock (Immediate Dispatch)</option>
                     <option value="low_stock" className="bg-white text-amber-800">Low Stock (Limited Batch)</option>
                     <option value="out_of_stock" className="bg-white text-slate-600">Out of Stock (Pre-order Only)</option>
                   </select>
@@ -573,39 +624,114 @@ export const ProductEditModal: React.FC = () => {
               </div>
             </div>
 
-            {/* SECTION 4: Freight, Lead Time & Descriptions */}
+            {/* SECTION 4: Freight, Delivery Date & Lead Time Controls */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-200">
                 <Truck className="w-4 h-4 text-teal-600" />
-                Dispatch Availability & Description
+                Dispatch Lead Time & Delivery Schedule
               </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-                    Dispatch Lead Time
-                  </label>
-                  <input
-                    type="text"
-                    value={leadTime}
-                    onChange={e => setLeadTime(e.target.value)}
-                    placeholder="e.g. 2-4 business days"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white"
-                  />
+              {/* Delivery Date / Lead Time Selector Mode */}
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <span className="font-bold text-slate-800 text-xs uppercase tracking-wider">
+                    Delivery Schedule Mode
+                  </span>
+                  <div className="flex items-center gap-1.5 bg-slate-200 p-1 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setDeliveryMode('range')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        deliveryMode === 'range'
+                          ? 'bg-teal-700 text-white shadow-xs'
+                          : 'text-slate-700 hover:bg-slate-300'
+                      }`}
+                    >
+                      Business Days Range
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeliveryMode('date')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        deliveryMode === 'date'
+                          ? 'bg-teal-700 text-white shadow-xs'
+                          : 'text-slate-700 hover:bg-slate-300'
+                      }`}
+                    >
+                      Target Calendar Date
+                    </button>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-                    Delivery Regions (comma separated)
-                  </label>
-                  <input
-                    type="text"
-                    value={deliveryZones}
-                    onChange={e => setDeliveryZones(e.target.value)}
-                    placeholder="e.g. Addis Ababa, Oromia, Amhara, Sidama"
-                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white"
-                  />
+                {deliveryMode === 'range' ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-600 mb-1">
+                        MINIMUM LEAD DAYS
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={minLeadDays}
+                        onChange={e => setMinLeadDays(e.target.value ? Number(e.target.value) : '')}
+                        placeholder="Min days (e.g. 2)"
+                        className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs font-bold focus:border-teal-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-600 mb-1">
+                        MAXIMUM LEAD DAYS
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={maxLeadDays}
+                        onChange={e => setMaxLeadDays(e.target.value ? Number(e.target.value) : '')}
+                        placeholder="Max days (e.g. 5)"
+                        className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs font-bold focus:border-teal-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="pt-1">
+                    <label className="block text-[10px] font-bold text-slate-600 mb-1">
+                      SPECIFIC TARGET DELIVERY CALENDAR DATE
+                    </label>
+                    <input
+                      type="date"
+                      value={targetDeliveryDate}
+                      onChange={e => setTargetDeliveryDate(e.target.value)}
+                      className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs font-bold focus:border-teal-600 focus:outline-none cursor-pointer"
+                    />
+                  </div>
+                )}
+
+                <div className="text-[11px] text-teal-800 font-semibold bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-teal-600" />
+                  <span>
+                    Formatted Lead Time:{' '}
+                    <strong>
+                      {deliveryMode === 'range'
+                        ? `${minLeadDays || 0} to ${maxLeadDays || 0} business days`
+                        : targetDeliveryDate
+                        ? `Target Delivery Date: ${targetDeliveryDate}`
+                        : 'Select calendar date'}
+                    </strong>
+                  </span>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
+                  Delivery Regions & Coverage (comma separated)
+                </label>
+                <input
+                  type="text"
+                  value={deliveryZones}
+                  onChange={e => setDeliveryZones(e.target.value)}
+                  placeholder="e.g. Addis Ababa, Oromia, Amhara, Hawassa Dry Port, Nationwide"
+                  className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-teal-600 focus:bg-white"
+                />
               </div>
 
               <div>

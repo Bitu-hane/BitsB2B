@@ -564,7 +564,7 @@ export const SignUpPage: React.FC = () => {
                     {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin text-[#C08829]" />
-                        <span>Saving to PostgreSQL Database...</span>
+                        <span>Creating Business Profile...</span>
                       </>
                     ) : (
                       <>

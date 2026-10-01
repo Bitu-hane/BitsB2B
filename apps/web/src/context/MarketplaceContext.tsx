@@ -69,8 +69,8 @@ interface MarketplaceContextType {
   setSelectedProduct: (p: Product | null) => void;
   selectedSeller: Business | null;
   setSelectedSeller: (biz: Business | null) => void;
-  viewingView: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans';
-  setViewingView: (view: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans') => void;
+  viewingView: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans' | 'admin';
+  setViewingView: (view: 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans' | 'admin') => void;
   subscriptionUpgrade: { currentCount?: number; listingLimit?: number; message?: string } | null;
   openSubscriptionPlans: (details?: { currentCount?: number; listingLimit?: number; message?: string }) => void;
 
@@ -164,7 +164,31 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   };
 
-  const [authView, setAuthView] = useState<'login' | 'signup' | 'marketplace'>('login');
+  const [authView, setAuthViewState] = useState<'login' | 'signup' | 'marketplace'>(() => {
+    if (typeof window !== 'undefined') {
+      const cleanPath = window.location.pathname.toLowerCase().trim();
+      if (cleanPath.startsWith('/signup')) return 'signup';
+      if (cleanPath.startsWith('/login')) return 'login';
+    }
+    return 'marketplace';
+  });
+
+  const setAuthView = (view: 'login' | 'signup' | 'marketplace') => {
+    setAuthViewState(view);
+    if (typeof window !== 'undefined') {
+      let targetPath = window.location.pathname;
+      if (view === 'login') targetPath = '/login';
+      else if (view === 'signup') targetPath = '/signup';
+      else if (view === 'marketplace') {
+        if (window.location.pathname === '/login' || window.location.pathname === '/signup') {
+          targetPath = getPathFromView(viewingView);
+        }
+      }
+      if (window.location.pathname !== targetPath) {
+        window.location.href = targetPath;
+      }
+    }
+  };
 
   const t = (key: string, params?: Record<string, string | number>): string => {
     const currentDict = translationsMap[language] || translationsMap['en'];
@@ -279,6 +303,8 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
     return CATEGORIES;
   };
 
+  const [isHydrated, setIsHydrated] = useState(false);
+
   // Sync state from localStorage & fetch live products & categories from DB on mount
   useEffect(() => {
     refreshProductsFromApi();
@@ -291,7 +317,17 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
       }
 
       const savedUser = localStorage.getItem(STORAGE_KEYS.USER);
-      if (savedUser) setCurrentUserState(JSON.parse(savedUser));
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          if (parsedUser && parsedUser.id) {
+            setCurrentUserState(parsedUser);
+            setAuthViewState('marketplace');
+          }
+        } catch (e) {
+          console.warn('Error parsing saved user:', e);
+        }
+      }
 
       const savedUsersList = localStorage.getItem(STORAGE_KEYS.USERS_LIST);
       if (savedUsersList) setAllUsers(JSON.parse(savedUsersList));
@@ -306,6 +342,8 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
       if (savedNotifs) setNotifications(JSON.parse(savedNotifs));
     } catch (e) {
       console.warn('Error reading from localStorage during hydration:', e);
+    } finally {
+      setIsHydrated(true);
     }
   }, []);
 
@@ -316,7 +354,81 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [filterVerifiedOnly, setFilterVerifiedOnly] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'featured' | 'price_low' | 'price_high' | 'moq_low' | 'newest'>('featured');
 
-  const [viewingView, setViewingView] = useState<'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans'>('home');
+  type ViewType = 'home' | 'catalog' | 'orders' | 'seller_dashboard' | 'inquiries' | 'subscription_plans' | 'admin';
+
+  const getPathFromView = (view: ViewType): string => {
+    switch (view) {
+      case 'seller_dashboard': return '/seller-dashboard';
+      case 'orders': return '/orders';
+      case 'inquiries': return '/inquiries';
+      case 'subscription_plans': return '/subscription-plans';
+      case 'admin': return '/admin';
+      case 'catalog': return '/catalog';
+      case 'home': default: return '/catalog';
+    }
+  };
+
+  const getViewFromPath = (path: string): ViewType => {
+    const cleanPath = path.toLowerCase().trim();
+    if (cleanPath.startsWith('/seller-dashboard') || cleanPath.startsWith('/seller') || cleanPath.startsWith('/supplier-dashboard')) return 'seller_dashboard';
+    if (cleanPath.startsWith('/orders') || cleanPath.startsWith('/order')) return 'orders';
+    if (cleanPath.startsWith('/inquiries') || cleanPath.startsWith('/inquiry') || cleanPath.startsWith('/rfqs') || cleanPath.startsWith('/rfq')) return 'inquiries';
+    if (cleanPath.startsWith('/subscription-plans')) return 'subscription_plans';
+    if (cleanPath.startsWith('/admin')) return 'admin';
+    if (cleanPath.startsWith('/catalog')) return 'catalog';
+    return 'home';
+  };
+
+  const [viewingView, setViewingViewState] = useState<ViewType>(() => {
+    if (typeof window !== 'undefined') {
+      return getViewFromPath(window.location.pathname);
+    }
+    return 'home';
+  });
+
+  const setViewingView = (view: ViewType) => {
+    setViewingViewState(view);
+    if (typeof window !== 'undefined') {
+      const targetPath = getPathFromView(view);
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState({ view }, '', targetPath);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handlePopState = () => {
+        const cleanPath = window.location.pathname.toLowerCase().trim();
+        if (cleanPath.startsWith('/login')) {
+          setAuthViewState('login');
+        } else if (cleanPath.startsWith('/signup')) {
+          setAuthViewState('signup');
+        } else {
+          setAuthViewState('marketplace');
+          const targetView = getViewFromPath(window.location.pathname);
+          setViewingViewState(targetView);
+        }
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => window.removeEventListener('popstate', handlePopState);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && isHydrated) {
+      const cleanPath = window.location.pathname.toLowerCase().trim();
+      if (!currentUser) {
+        if (cleanPath === '/' || cleanPath === '') {
+          setAuthViewState('login');
+          if (window.location.pathname !== '/login') {
+            window.history.replaceState({ authView: 'login' }, '', '/login');
+          }
+        }
+      }
+    }
+  }, [currentUser, isHydrated]);
+
   const [subscriptionUpgrade, setSubscriptionUpgrade] = useState<{ currentCount?: number; listingLimit?: number; message?: string } | null>(null);
 
   const openSubscriptionPlans = (details?: { currentCount?: number; listingLimit?: number; message?: string }) => {
@@ -344,43 +456,38 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   // Persist state updates
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !isHydrated) return;
     if (currentUser) {
       localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(currentUser));
     } else {
       localStorage.removeItem(STORAGE_KEYS.USER);
     }
-  }, [currentUser]);
+  }, [currentUser, isHydrated]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-    }
-  }, [products]);
+    if (typeof window === 'undefined' || !isHydrated) return;
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+  }, [products, isHydrated]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
-    }
-  }, [orders]);
+    if (typeof window === 'undefined' || !isHydrated) return;
+    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+  }, [orders, isHydrated]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.INQUIRIES, JSON.stringify(inquiries));
-    }
-  }, [inquiries]);
+    if (typeof window === 'undefined' || !isHydrated) return;
+    localStorage.setItem(STORAGE_KEYS.INQUIRIES, JSON.stringify(inquiries));
+  }, [inquiries, isHydrated]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
-    }
-  }, [notifications]);
+    if (typeof window === 'undefined' || !isHydrated) return;
+    localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
+  }, [notifications, isHydrated]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.USERS_LIST, JSON.stringify(allUsers));
-    }
-  }, [allUsers]);
+    if (typeof window === 'undefined' || !isHydrated) return;
+    localStorage.setItem(STORAGE_KEYS.USERS_LIST, JSON.stringify(allUsers));
+  }, [allUsers, isHydrated]);
 
   // Dispatch an In-App Notification and SMS Alert
   const triggerNotificationAndSMS = (
@@ -477,13 +584,19 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
         if (localMatch) {
           setCurrentUserState(localMatch);
+          setAuthViewState('marketplace');
           if (typeof window !== 'undefined') {
             localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(localMatch));
           }
           if (localMatch.staffRole) {
-            window.location.href = '/admin';
+            setViewingViewState('admin');
+            if (typeof window !== 'undefined') window.history.pushState({}, '', '/admin');
+          } else if (localMatch.isSeller) {
+            setViewingViewState('seller_dashboard');
+            if (typeof window !== 'undefined') window.history.pushState({}, '', '/seller-dashboard');
           } else {
-            setAuthView('marketplace');
+            setViewingViewState('catalog');
+            if (typeof window !== 'undefined') window.history.pushState({}, '', '/catalog');
           }
           return { success: true };
         }
@@ -531,14 +644,20 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
       };
 
       setCurrentUserState(mappedUser);
+      setAuthViewState('marketplace');
       if (typeof window !== 'undefined') {
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mappedUser));
       }
 
       if (staffRole) {
-        window.location.href = '/admin';
+        setViewingViewState('admin');
+        if (typeof window !== 'undefined') window.history.pushState({}, '', '/admin');
+      } else if (isSeller) {
+        setViewingViewState('seller_dashboard');
+        if (typeof window !== 'undefined') window.history.pushState({}, '', '/seller-dashboard');
       } else {
-        setAuthView('marketplace');
+        setViewingViewState('catalog');
+        if (typeof window !== 'undefined') window.history.pushState({}, '', '/catalog');
       }
       return { success: true };
     }
@@ -581,7 +700,17 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
         };
         setAllUsers(prev => [newUser, ...prev]);
         setCurrentUserState(newUser);
-        setAuthView('marketplace');
+        setAuthViewState('marketplace');
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
+        }
+        if (newUser.isSeller) {
+          setViewingViewState('seller_dashboard');
+          if (typeof window !== 'undefined') window.history.pushState({}, '', '/seller-dashboard');
+        } else {
+          setViewingViewState('catalog');
+          if (typeof window !== 'undefined') window.history.pushState({}, '', '/catalog');
+        }
         return { success: true };
       }
 
@@ -626,7 +755,17 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
 
       setAllUsers(prev => [newUser, ...prev]);
       setCurrentUserState(newUser);
-      setAuthView('marketplace');
+      setAuthViewState('marketplace');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
+      }
+      if (newUser.isSeller) {
+        setViewingViewState('seller_dashboard');
+        if (typeof window !== 'undefined') window.history.pushState({}, '', '/seller-dashboard');
+      } else {
+        setViewingViewState('catalog');
+        if (typeof window !== 'undefined') window.history.pushState({}, '', '/catalog');
+      }
       return { success: true };
     }
 
@@ -665,6 +804,17 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
 
     setAllUsers(prev => [...prev, newUser]);
     setCurrentUserState(newUser);
+    setAuthViewState('marketplace');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
+    }
+    if (isSeller) {
+      setViewingViewState('seller_dashboard');
+      if (typeof window !== 'undefined') window.history.pushState({}, '', '/seller-dashboard');
+    } else {
+      setViewingViewState('catalog');
+      if (typeof window !== 'undefined') window.history.pushState({}, '', '/catalog');
+    }
 
     triggerNotificationAndSMS(
       newUserId,
@@ -733,8 +883,8 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
       if (currentUser) {
         triggerNotificationAndSMS(
           currentUser.id,
-          'Listing Saved to Database',
-          `Product "${productData.name}" has been stored in PostgreSQL catalog database.`,
+          'Product Published to Marketplace',
+          `Product "${productData.name}" is now active in the wholesale catalog.`,
           'system',
           currentUser.phone
         );

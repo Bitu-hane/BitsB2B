@@ -212,7 +212,7 @@ export const Header: React.FC = () => {
                     <span>{t('common.navInquiries')}</span>
                   </button>
 
-                  {currentUser.isSeller && (
+                  {(currentUser.isSeller || ['importer', 'producer', 'wholesaler', 'reseller', 'seller'].includes((currentUser.business.role || '').toLowerCase())) && (
                     <button
                       onClick={() => {
                         setViewingView('seller_dashboard');
@@ -222,6 +222,21 @@ export const Header: React.FC = () => {
                     >
                       <Store className="w-3.5 h-3.5" />
                       <span>{t('common.navSellerHub')}</span>
+                    </button>
+                  )}
+
+                  {(Boolean(currentUser.staffRole) || ['admin', 'staff', 'super_admin', 'verification_officer', 'listings_moderator', 'escrow_auditor', 'dispute_specialist'].includes((currentUser.business.role || '').toLowerCase()) || ['admin', 'staff', 'super_admin', 'verification_officer', 'listings_moderator', 'escrow_auditor', 'dispute_specialist'].includes((currentUser.staffRole || '').toLowerCase())) && (
+                    <button
+                      onClick={() => {
+                        setAccountDropdownOpen(false);
+                        if (typeof window !== 'undefined') {
+                          window.location.href = '/admin';
+                        }
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center gap-2 text-teal-400 font-bold"
+                    >
+                      <Store className="w-3.5 h-3.5 text-teal-400" />
+                      <span>Admin Control Console</span>
                     </button>
                   )}
 

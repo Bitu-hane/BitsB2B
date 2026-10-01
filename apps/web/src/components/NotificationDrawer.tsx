@@ -31,15 +31,15 @@ export const NotificationDrawer: React.FC = () => {
       case 'order_confirmed':
       case 'order_shipped':
       case 'order_delivered':
-        return <Package className="w-4 h-4 text-[#C85A32]" />;
+        return <Package className="w-4 h-4 text-teal-600" />;
       case 'inquiry_received':
       case 'inquiry_answered':
-        return <MessageSquare className="w-4 h-4 text-[#C85A32]" />;
+        return <MessageSquare className="w-4 h-4 text-teal-600" />;
       case 'escrow_held':
       case 'escrow_released':
-        return <ShieldCheck className="w-4 h-4 text-[#D97706]" />;
+        return <ShieldCheck className="w-4 h-4 text-emerald-600" />;
       default:
-        return <Bell className="w-4 h-4 text-[#C85A32]" />;
+        return <Bell className="w-4 h-4 text-teal-600" />;
     }
   };
 
@@ -47,7 +47,7 @@ export const NotificationDrawer: React.FC = () => {
     <AnimatePresence>
       <div
         id="notification-drawer-backdrop"
-        className="fixed inset-0 z-50 bg-[#0B1718]/70 backdrop-blur-xs flex justify-end"
+        className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex justify-end"
         onClick={() => setNotificationDrawerOpen(false)}
       >
         <motion.div
@@ -56,34 +56,36 @@ export const NotificationDrawer: React.FC = () => {
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           onClick={e => e.stopPropagation()}
-          className="bg-white text-[#162C30] w-full max-w-md h-full shadow-2xl border-l border-[#E5DFD5] flex flex-col"
+          className="bg-slate-50 text-slate-900 w-full max-w-md h-full shadow-2xl border-l border-slate-200 flex flex-col"
         >
           {/* Header */}
-          <div className="p-5 bg-[#112225] text-[#F7F4EE] flex items-center justify-between border-b border-[#274B52] shrink-0">
-            <div className="flex items-center gap-2">
-              <Bell className="w-5 h-5 text-[#C85A32]" />
+          <div className="p-5 bg-[#1E293B] text-white flex items-center justify-between border-b border-slate-700 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white shrink-0 shadow-xs">
+                <Bell className="w-4 h-4" />
+              </div>
               <div>
-                <h2 className="font-bold text-sm text-[#F7F4EE]">
+                <h2 className="font-bold text-sm text-white">
                   Notifications &amp; Dispatch Alerts
                 </h2>
-                <p className="text-[11px] text-[#A8A196]">
-                  Real-time trade events &bull; SMS mirror logs
+                <p className="text-[11px] text-slate-300">
+                  Real-time trade events &bull; Verified SMS dispatches
                 </p>
               </div>
             </div>
             <button
               onClick={() => setNotificationDrawerOpen(false)}
-              className="text-[#888] hover:text-white p-1 rounded-lg cursor-pointer"
+              className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-700 cursor-pointer transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* List */}
-          <div className="p-4 overflow-y-auto flex-1 space-y-3 divide-y divide-[#EFEAE0]">
+          <div className="p-4 overflow-y-auto flex-1 space-y-3 divide-y divide-slate-200">
             {notifications.length === 0 ? (
-              <div className="text-center py-12 text-xs text-[#888] space-y-2">
-                <Bell className="w-8 h-8 mx-auto text-[#CCC]" />
+              <div className="text-center py-12 text-xs text-slate-400 space-y-2">
+                <Bell className="w-8 h-8 mx-auto text-slate-300" />
                 <p>No notifications yet.</p>
               </div>
             ) : (
@@ -92,28 +94,28 @@ export const NotificationDrawer: React.FC = () => {
                   key={notif.id}
                   onClick={() => markNotificationRead(notif.id)}
                   className={`pt-3 first:pt-0 p-3 rounded-xl transition-colors cursor-pointer ${
-                    !notif.read ? 'bg-[#FAF7F2] border border-[#E5DFD5]' : 'hover:bg-[#FBF9F5]'
+                    !notif.read ? 'bg-white border border-slate-200 shadow-xs' : 'hover:bg-slate-100'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-white border border-[#D8CFBF] shrink-0 shadow-2xs mt-0.5">
+                    <div className="p-2 rounded-lg bg-slate-100 border border-slate-200 shrink-0 shadow-xs mt-0.5">
                       {getIcon(notif.type)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
-                        <span className="text-xs font-bold text-[#112225]">
+                        <span className="text-xs font-bold text-slate-900">
                           {notif.title}
                         </span>
-                        <span className="text-[10px] text-[#888]">{notif.timestamp}</span>
+                        <span className="text-[10px] text-slate-500">{notif.timestamp}</span>
                       </div>
-                      <p className="text-xs text-[#6E685F] mt-1 leading-relaxed">
+                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                         {notif.message}
                       </p>
 
                       {/* SMS Mirror Badge if applicable */}
                       {notif.smsDispatched && (
-                        <div className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#92400E] bg-[#FEF3C7] border border-[#FCD34D] px-2 py-0.5 rounded-full">
-                          <Smartphone className="w-3 h-3" />
+                        <div className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                          <Smartphone className="w-3 h-3 text-emerald-600" />
                           <span>SMS Dispatched to User Mobile</span>
                         </div>
                       )}
@@ -125,13 +127,13 @@ export const NotificationDrawer: React.FC = () => {
           </div>
 
           {/* Footer view shortcuts */}
-          <div className="p-4 bg-[#FAF7F2] border-t border-[#E5DFD5] flex items-center justify-between text-xs shrink-0">
+          <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between text-xs shrink-0">
             <button
               onClick={() => {
                 setNotificationDrawerOpen(false);
                 setViewingView('orders');
               }}
-              className="text-[#C85A32] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-teal-700 font-bold hover:underline flex items-center gap-1 cursor-pointer"
             >
               <span>View All Orders &rarr;</span>
             </button>
@@ -140,7 +142,7 @@ export const NotificationDrawer: React.FC = () => {
                 setNotificationDrawerOpen(false);
                 setViewingView('inquiries');
               }}
-              className="text-[#112225] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-slate-800 font-bold hover:underline flex items-center gap-1 cursor-pointer"
             >
               <span>View Inquiries &rarr;</span>
             </button>
