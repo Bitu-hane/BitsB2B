@@ -33,16 +33,6 @@ export const Header: React.FC = () => {
   const unreadNotifCount = notifications.filter(n => !n.read).length;
   const activeInquiriesCount = inquiries.length;
 
-  const freqSearches = [
-    'Slurry pump',
-    'Corrugated boxes',
-    'PP woven sacks',
-    'Brake actuator',
-    'POS station',
-    'Grain sealer',
-    'Diesel fuel filter',
-  ];
-
   // User initials
   const getUserInitials = (name: string) => {
     const parts = name.trim().split(' ');
@@ -51,9 +41,9 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full bg-[#1B2340] text-[#F4EFE3] pb-4 sticky top-0 z-40 shadow-lg border-b border-[#2B3558]">
+    <header className="w-full bg-[#1B2340] text-[#F4EFE3] pb-3 sticky top-0 z-40 shadow-lg border-b border-[#2B3558]">
       {/* Main Header Row */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-8 pt-4 pb-2">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-8 pt-3 pb-1">
         <div className="flex items-center justify-between gap-6 flex-wrap lg:flex-nowrap">
           {/* Brand Logo */}
           <div
@@ -250,28 +240,6 @@ export const Header: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Frequently Searched Pill Tags */}
-        <div className="flex items-center gap-2.5 flex-wrap mt-4 text-[13px] text-[#A7AECB]">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[#C08829]">★</span>
-            <span>{language === 'am' ? 'በተደጋጋሚ የተፈለጉ፡' : 'Frequently searched:'}</span>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {freqSearches.map(tag => (
-              <button
-                key={tag}
-                onClick={() => {
-                  setSearchQuery(tag);
-                  setViewingView('catalog');
-                }}
-                className="bg-[#F4EFE3]/[0.06] border border-[#F4EFE3]/[0.12] hover:bg-[#F4EFE3]/[0.13] hover:border-[#F4EFE3]/[0.24] text-[#F4EFE3] px-3.5 py-1.5 rounded-full text-[12.5px] transition-colors cursor-pointer"
-              >
-                {tag}
-              </button>
-            ))}
           </div>
         </div>
       </div>
