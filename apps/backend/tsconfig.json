@@ -20,8 +20,8 @@
     "paths": {
       "@common/*": ["src/common/*"],
       "@modules/*": ["src/modules/*"],
-      "@bitsb2b/shared": ["../../packages/shared/src/index.ts"],
-      "@bmb2b/shared": ["../../packages/shared/src/index.ts"]
+      "@bitsb2b/shared": ["../../packages/shared/src/index"],
+      "@bmb2b/shared": ["../../packages/shared/src/index"]
     }
   }
 }
