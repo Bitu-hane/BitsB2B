@@ -24,4 +24,5 @@ manifest-ui/
 out/
 apps/web/out/
 apps/web/dist/
+apps/backend/backend
 
