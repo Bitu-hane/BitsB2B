@@ -98,6 +98,9 @@ const MarketplaceContent: React.FC = () => {
       {/* 2. Global Header */}
       <Header />
 
+      {/* Shared primary workspace navigation */}
+      <CategoryNav />
+
       {/* 3. Main Views Rendering */}
       {viewingView === 'orders' ? (
         <OrderHistoryView />
@@ -110,9 +113,6 @@ const MarketplaceContent: React.FC = () => {
       ) : (
         /* Catalog & Home View */
         <main className="flex-1 pb-16">
-          {/* Sticky Folder Tabs Bar */}
-          <CategoryNav />
-
           {/* Catalog Top Subheader & Filter Pills Bar (Screenshot 3 Layout) */}
           <div className="bg-[#F1F2F5] border-b border-[#E2E4EA] py-6">
             <div className="max-w-[1240px] mx-auto px-4 sm:px-8 flex flex-wrap items-center justify-between gap-4">
