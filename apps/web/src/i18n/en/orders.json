@@ -1,0 +1,19 @@
+{
+  "title": "Orders & Escrow Payment Protection",
+  "subtitle": "Track wholesale orders, escrow milestone holds, and delivery releases",
+  "orderNumber": "Order #",
+  "statusPlaced": "Order Placed",
+  "statusConfirmed": "Confirmed by Seller",
+  "statusInTransit": "In Transit / Dispatched",
+  "statusDelivered": "Delivered & Verified",
+  "statusCompleted": "Escrow Funds Released",
+  "statusCancelled": "Order Cancelled",
+  "paymentMethod": "Payment Method",
+  "telebirr": "Telebirr SuperApp",
+  "cbeBirr": "CBE Birr",
+  "bankTransfer": "Commercial Bank of Ethiopia Direct",
+  "escrowSecured": "Escrow Payment Secured",
+  "escrowNotice": "Funds are held safely in BitsB2B Escrow until you inspect and verify delivery.",
+  "confirmDelivery": "Confirm Delivery & Release Funds",
+  "reorder": "Reorder Bulk Items"
+}

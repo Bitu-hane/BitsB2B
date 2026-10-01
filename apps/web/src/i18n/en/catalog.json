@@ -1,0 +1,19 @@
+{
+  "title": "Wholesale Products & Industrial Equipment",
+  "searchPlaceholder": "Search by product name, model, supplier, or material specifications...",
+  "allCategories": "All Categories",
+  "filterStock": "Stock Filter",
+  "verifiedSellersOnly": "Verified Suppliers Only",
+  "sortBy": "Sort By",
+  "featured": "Featured First",
+  "priceLowToHigh": "Price: Low to High",
+  "priceHighToLow": "Price: High to Low",
+  "moqLowToHigh": "MOQ: Low to High",
+  "newest": "Newest Additions",
+  "moqLabel": "MOQ",
+  "unitPrice": "Unit Price",
+  "requestQuote": "Request Quote / Inquire",
+  "placeBulkOrder": "Place Bulk Order",
+  "noProductsFound": "No products match your search criteria. Try adjusting your filters.",
+  "sellerVerifiedBadge": "Verified Ethiopian Supplier"
+}

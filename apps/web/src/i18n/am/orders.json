@@ -1,0 +1,19 @@
+{
+  "title": "ትእዛዞች እና የእስክሮው የክፍያ ጥበቃ",
+  "subtitle": "የጅምላ ትእዛዞችዎን እና የእስክሮው የክፍያ ሁኔታ ይከታተሉ",
+  "orderNumber": "ትእዛዝ #",
+  "statusPlaced": "ትእዛዝ ተልኳል",
+  "statusConfirmed": "በአቅራቢው ተረጋግጧል",
+  "statusInTransit": "በመንገድ ላይ ነው",
+  "statusDelivered": "ደርሷል እና ተረጋግጧል",
+  "statusCompleted": "ክፍያ ለአቅራቢው ተለቋል",
+  "statusCancelled": "ትእዛዝ ተሰርዟል",
+  "paymentMethod": "የክፍያ መንገድ",
+  "telebirr": "ቴሌብር (Telebirr)",
+  "cbeBirr": "ሲቢኢ ብር (CBE Birr)",
+  "bankTransfer": "የኢትዮጵያ ንግድ ባንክ ቀጥታ",
+  "escrowSecured": "ክፍያ በታመነ እስክሮው ተጠብቋል",
+  "escrowNotice": "እቃው ደርሶዎት እስኪያረጋግጡ ድረስ ገንዘብዎ በBitsB2B እስክሮው ታስሮ ይቆያል።",
+  "confirmDelivery": "ርክክብ አረጋግጥ እና ክፍያ ልቀቅ",
+  "reorder": "ድጋሚ እዝዝ"
+}

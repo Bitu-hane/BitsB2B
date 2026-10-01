@@ -1,0 +1,19 @@
+{
+  "appName": "BitsB2B Ethiopian Wholesale Marketplace",
+  "navCatalog": "Catalog & RFQ",
+  "navOrders": "Orders & Escrow",
+  "navInquiries": "Inquiries Inbox",
+  "navSellerHub": "Seller Hub",
+  "navSubscription": "Subscription Plans",
+  "cancel": "Cancel",
+  "save": "Save Changes",
+  "submit": "Submit",
+  "loading": "Connecting to BitsB2B...",
+  "notifications": "Notifications",
+  "markAllRead": "Mark all as read",
+  "noNotifications": "No new notifications",
+  "currency": "ETB",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service",
+  "copyright": "© 2026 BitsB2B Enterprise. All rights reserved."
+}

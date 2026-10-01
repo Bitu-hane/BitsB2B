@@ -24,8 +24,7 @@ import {
   INITIAL_NOTIFICATIONS,
   MOCK_BUSINESSES,
 } from '../data/mockData';
-import enTranslations from '../i18n/en.json';
-import amTranslations from '../i18n/am.json';
+import { enTranslations, amTranslations } from '../i18n';
 import { api } from '../services/api';
 
 const translationsMap: Record<string, any> = {

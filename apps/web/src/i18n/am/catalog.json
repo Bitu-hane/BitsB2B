@@ -1,0 +1,19 @@
+{
+  "title": "የጅምላ ምርቶች እና የኢንዱስትሪ እቃዎች",
+  "searchPlaceholder": "በምርት ስም፣ አቅራቢ ወይም ዝርዝር መረጃ ይፈልጉ...",
+  "allCategories": "ሁሉም ምድቦች",
+  "filterStock": "የክምችት ሁኔታ",
+  "verifiedSellersOnly": "የተረጋገጡ አቅራቢዎች ብቻ",
+  "sortBy": "መደቢያ",
+  "featured": "ተመርጠው የቀረቡ",
+  "priceLowToHigh": "ዋጋ፡ ከአነስተኛ ወደ ከፍተኛ",
+  "priceHighToLow": "ዋጋ፡ ከከፍተኛ ወደ አነስተኛ",
+  "moqLowToHigh": "አነስተኛ ትእዛዝ፡ ከአነስተኛ",
+  "newest": "አዲስ የገቡ",
+  "moqLabel": "አነስተኛ ትእዛዝ",
+  "unitPrice": "የአንዱ ዋጋ",
+  "requestQuote": "የዋጋ ጥያቄ ላክ",
+  "placeBulkOrder": "የጅምላ ትእዛዝ እዝዝ",
+  "noProductsFound": "ከፍለጋዎ ጋር የሚመሳሰል ምርት አልተገኘም።",
+  "sellerVerifiedBadge": "ህጋዊ የተረጋገጠ አቅራቢ"
+}
