@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useMarketplace } from '../context/MarketplaceContext';
-import { Search, Tag } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 export const HeroSearch: React.FC = () => {
   const { searchQuery, setSearchQuery, setViewingView } = useMarketplace();
@@ -10,16 +10,6 @@ export const HeroSearch: React.FC = () => {
     e.preventDefault();
     setViewingView('catalog');
   };
-
-  const POPULAR_KEYWORDS = [
-    'Slurry Pump',
-    'Corrugated Boxes',
-    'PP Woven Sacks',
-    'Brake Actuator',
-    'POS Station',
-    'Grain Sealer',
-    'Diesel Fuel Filter',
-  ];
 
   return (
     <div className="w-full bg-gradient-to-b from-[#112225] via-[#162C30] to-[#1D383D] text-[#F7F4EE] py-8 sm:py-10 px-4 sm:px-6 shadow-xl border-b border-[#274B52] relative overflow-hidden">
@@ -64,27 +54,6 @@ export const HeroSearch: React.FC = () => {
             </button>
           </div>
         </form>
-
-        {/* Popular Keyword Chips */}
-        <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-[#A8A196]">
-          <span className="flex items-center gap-1 text-[#EBE5DA] font-semibold">
-            <Tag className="w-3.5 h-3.5 text-[#C85A32]" />
-            Frequently Searched:
-          </span>
-          {POPULAR_KEYWORDS.map(kw => (
-            <button
-              key={kw}
-              type="button"
-              onClick={() => {
-                setSearchQuery(kw);
-                setViewingView('catalog');
-              }}
-              className="px-3 py-1 bg-[#1D383D] hover:bg-[#274B52] text-[#F7F4EE] border border-[#34626B] rounded-full transition-colors cursor-pointer text-[11px]"
-            >
-              {kw}
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
