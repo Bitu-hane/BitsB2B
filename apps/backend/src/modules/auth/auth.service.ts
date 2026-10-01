@@ -133,13 +133,29 @@ export class AuthService {
 
     const sessionTokens = await this.createSession(user.id, deviceInfo, ipAddress);
 
+    const businesses = await this.dataSource.query(
+      `SELECT b.id, b.name, b.business_type_code AS "businessTypeCode", 
+              b.can_buy AS "canBuy", b.can_sell AS "canSell", b.verification_status AS "verificationStatus",
+              b.phone, b.tin_number AS "tinNumber", b.trade_license_number AS "tradeLicenseNumber", b.description,
+              ba.region, ba.city, ba.subcity
+       FROM businesses b
+       LEFT JOIN business_addresses ba ON ba.business_id = b.id AND ba.is_default_billing = TRUE
+       WHERE b.owner_user_id = $1 LIMIT 1`,
+      [user.id],
+    );
+    const business = businesses && businesses[0] ? businesses[0] : null;
+
     return {
       ...sessionTokens,
       user: {
         id: user.id,
         phone: user.phone,
         fullName: user.full_name,
+        email: user.email,
+        staffRole: user.staff_role,
+        staff_role: user.staff_role,
       },
+      business,
     };
   }
 
@@ -212,6 +228,18 @@ export class AuthService {
 
     const sessionTokens = await this.createSession(user.id, deviceInfo, ipAddress);
 
+    const businesses = await this.dataSource.query(
+      `SELECT b.id, b.name, b.business_type_code AS "businessTypeCode", 
+              b.can_buy AS "canBuy", b.can_sell AS "canSell", b.verification_status AS "verificationStatus",
+              b.phone, b.tin_number AS "tinNumber", b.trade_license_number AS "tradeLicenseNumber", b.description,
+              ba.region, ba.city, ba.subcity
+       FROM businesses b
+       LEFT JOIN business_addresses ba ON ba.business_id = b.id AND ba.is_default_billing = TRUE
+       WHERE b.owner_user_id = $1 LIMIT 1`,
+      [user.id],
+    );
+    const business = businesses && businesses[0] ? businesses[0] : null;
+
     return {
       ...sessionTokens,
       user: {
@@ -222,6 +250,7 @@ export class AuthService {
         staffRole: user.staff_role,
         staff_role: user.staff_role,
       },
+      business,
     };
   }
 
