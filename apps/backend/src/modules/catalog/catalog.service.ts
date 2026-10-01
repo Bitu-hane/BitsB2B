@@ -531,9 +531,7 @@ export class CatalogService {
         }
       }
 
-      const status = dto.status && ['DRAFT', 'PENDING_APPROVAL'].includes(dto.status.toUpperCase())
-        ? dto.status.toUpperCase()
-        : 'PENDING_APPROVAL';
+      const status = dto.status ? dto.status.toUpperCase() : 'PUBLISHED';
 
       const insertRes = await this.dataSource.query(
         `INSERT INTO products (
@@ -612,7 +610,7 @@ export class CatalogService {
       const hasMediaOrContentChange = Boolean(
         (dto.images && dto.images.length > 0) || dto.name || dto.description || dto.specifications
       );
-      const targetStatus = (dto as any).status || (hasMediaOrContentChange ? 'PENDING_APPROVAL' : undefined);
+      const targetStatus = (dto as any).status ? (dto as any).status.toUpperCase() : undefined;
 
       await this.dataSource.query(
         `UPDATE products SET 

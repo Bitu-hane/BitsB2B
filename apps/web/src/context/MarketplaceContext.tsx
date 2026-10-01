@@ -699,7 +699,7 @@ export const MarketplaceProvider: React.FC<{ children: ReactNode }> = ({ childre
       });
 
       if (res.data?.success === false || res.error) {
-        const errorMsg = res.data?.message || res.error?.message || 'Listing limit reached. Please upgrade your subscription plan.';
+        const errorMsg = res.data?.message || (res.error && res.error.message !== 'Internal Server Error' ? res.error.message : 'Subscription plan listing limit reached. Upgrade plan to publish more items.');
         if (currentUser) {
           triggerNotificationAndSMS(
             currentUser.id,
